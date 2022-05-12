@@ -1,0 +1,59 @@
+name: CI Build and Deploy
+on: "push"
+jobs:
+  jest-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Download dependencies
+        run: npm ci --ignore-scripts
+        env:
+          CI: true
+
+      - name: Build dependencies
+        run: npm rebuild
+        env:
+          CI: true
+
+      - name: Test
+        run: npm run test -- -w 2
+
+  publish:
+    needs: [jest-tests]
+    if: contains(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+          registry-url: https://npm.pkg.github.com/
+          scope: "@play-co"
+
+      - name: Download dependencies
+        run: npm ci --ignore-scripts
+        env:
+          CI: true
+          NODE_AUTH_TOKEN: ${{ secrets.PLAYCO_PACKAGES_TOKEN }}
+
+      - name: Build dependencies
+        run: npm rebuild
+        env:
+          CI: true
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

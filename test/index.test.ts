@@ -2,7 +2,7 @@ import { push, pop, log, dump, setEnabled } from "../src";
 
 // setEnabled(false);
 
-describe.skip("Log", () => {
+describe("Log", () => {
   it("should", () => {
     push("foobar:", 1);
     log(1);
