@@ -1,9 +1,10 @@
-import { push, pop, log, dump, setEnabled } from "../src";
+import { push, pop, log, stringify, setEnabled } from "../src";
 
 // setEnabled(false);
 
 describe("Log", () => {
   it("should", () => {
+    log(0);
     push("foobar:", 1);
     log(1);
     push("two:");
@@ -16,7 +17,11 @@ describe("Log", () => {
     log(6);
     log(6);
 
-    console.log(dump());
+    console.log(
+      stringify({
+        showTimestamp: true,
+      })
+    );
 
     expect(true).toBeTruthy();
   });
