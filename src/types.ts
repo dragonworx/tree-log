@@ -1,6 +1,8 @@
+export type Data = any[];
+
 export interface LogEntry {
   timestamp: Date;
-  data?: any[];
+  data?: Data;
   parent?: LogEntry;
   children: LogEntry[];
 }
@@ -8,6 +10,8 @@ export interface LogEntry {
 export interface StringifyOptions {
   indentChar?: string;
   showTimestamp?: boolean;
+  useColor?: boolean;
+  stringProviderMethodName?: string;
 }
 
 export interface State {

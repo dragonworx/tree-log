@@ -1,5 +1,5 @@
 import { LogEntry, StringifyOptions, State } from "./types";
-import { dataToString } from "./util";
+import { entryToString } from "./util";
 
 const state: State = (() => {
   const entry: LogEntry = {
@@ -81,7 +81,7 @@ function _stringify(
   buffer: string[]
 ) {
   if (entry !== state.root) {
-    buffer.push(dataToString(entry, depth, options));
+    buffer.push(entryToString(entry, depth, options));
   }
   entry.children.forEach((childEntry) =>
     _stringify(
