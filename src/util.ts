@@ -1,6 +1,8 @@
 import { Data, LogEntry, StringifyOptions } from "./types";
 import c from "ansi-colors";
 
+// https://en.wikipedia.org/wiki/Alt_code
+
 export const defaultStringifyOptions: StringifyOptions = {
   indentChar: ".",
   showTimestamp: true,

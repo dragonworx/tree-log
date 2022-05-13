@@ -4,10 +4,10 @@ setEnabled(true);
 
 describe("Log", () => {
   it("should", () => {
-    log(0);
-    push("foobar:", 1);
+    log("foo");
+    push("foo.bar", 1);
     log(1, /a/g, new Date());
-    push("two:");
+    push("baz");
     log(3, false, ["a", "b", true]);
     log(3, true);
     pop();
@@ -22,10 +22,12 @@ describe("Log", () => {
     log(6);
 
     console.log(
-      stringify({
-        showTimestamp: true,
-        useColor: true,
-      })
+      "\n\n\n" +
+        stringify({
+          showTimestamp: true,
+          useColor: true,
+        }) +
+        "\n\n\n"
     );
 
     expect(true).toBeTruthy();
