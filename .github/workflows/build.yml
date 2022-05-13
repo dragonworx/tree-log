@@ -25,6 +25,9 @@ jobs:
       - name: Test
         run: npm run test -- -w 2
 
+      - name: Build
+        run: npm run build
+
   publish:
     needs: [jest-tests]
     if: contains(github.ref, 'refs/tags/v')

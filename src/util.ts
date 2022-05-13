@@ -1,5 +1,5 @@
 import { Data, LogEntry, StringifyOptions } from "./types";
-import c from "ansi-colors";
+const c = require("ansi-colors");
 
 // https://en.wikipedia.org/wiki/Alt_code
 
