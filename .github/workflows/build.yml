@@ -37,13 +37,11 @@ jobs:
         with:
           node-version: "14.x"
           registry-url: https://npm.pkg.github.com/
-          scope: "@play-co"
 
       - name: Download dependencies
         run: npm ci --ignore-scripts
         env:
           CI: true
-          NODE_AUTH_TOKEN: ${{ secrets.PLAYCO_PACKAGES_TOKEN }}
 
       - name: Build dependencies
         run: npm rebuild
