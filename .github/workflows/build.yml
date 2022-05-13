@@ -1,4 +1,4 @@
-name: Build / Test
+name: Test / Publish
 on: "push"
 jobs:
   jest-tests:
@@ -11,6 +11,7 @@ jobs:
         with:
           node-version: "14.x"
           registry-url: https://npm.pkg.github.com/
+          scope: "@dragonworx"
 
       - name: Download dependencies
         run: npm ci --ignore-scripts
@@ -25,9 +26,6 @@ jobs:
       - name: Test
         run: npm run test -- -w 2
 
-      - name: Build
-        run: npm run build
-
   publish:
     needs: [jest-tests]
     if: contains(github.ref, 'refs/tags/v')
@@ -40,6 +38,7 @@ jobs:
         with:
           node-version: "14.x"
           registry-url: https://npm.pkg.github.com/
+          scope: "@dragonworx"
 
       - name: Download dependencies
         run: npm ci --ignore-scripts
@@ -55,6 +54,6 @@ jobs:
         run: npm run build
 
       - name: Publish package
-        run: npm publish
+        run: npm publish --access=public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
