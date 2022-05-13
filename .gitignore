@@ -246,6 +246,5 @@ Temporary Items
 .build/
 dist/
 example/node_modules
-output*
 temp/*
 yarn.lock
