@@ -1,10 +1,14 @@
 import { LogEntry, StringifyOptions, State } from "./types";
 import { entryToString } from "./util";
 
-const RootIdentifier = "";
+const RootIdentifier = "__ROOT__";
+
+let id = 0;
+const nextId = () => ++id;
 
 const state: State = (() => {
   const entry: LogEntry = {
+    id,
     timestamp: new Date(),
     identifier: RootIdentifier,
     children: [],
@@ -22,6 +26,7 @@ export function log(identifier: string, ...args: any[]) {
   }
 
   const entry: LogEntry = {
+    id: nextId(),
     timestamp: new Date(),
     identifier,
     args,
@@ -37,15 +42,20 @@ export function push(identifier: string, ...args: any[]) {
     return;
   }
 
+  const parent = state.head.children.length
+    ? state.head.children[state.head.children.length - 1]
+    : state.head;
+
   const entry: LogEntry = {
+    id: nextId(),
     timestamp: new Date(),
     identifier,
     args,
+    parent,
     children: [],
   };
 
-  state.head.children.push(entry);
-  entry.parent = state.head;
+  parent.children.push(entry);
   state.head = entry;
 }
 
@@ -100,9 +110,19 @@ export function setIsLoggingEnabled(isEnabled: boolean) {
 }
 
 export function clear() {
+  id = 0;
   state.root = state.head = {
+    id,
     timestamp: new Date(),
     identifier: RootIdentifier,
     children: [],
   };
+}
+
+export function toJSON(space: number = 4) {
+  return JSON.stringify(
+    state.root,
+    (key, value) => (key === "parent" ? undefined : value),
+    space
+  );
 }

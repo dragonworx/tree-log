@@ -69,9 +69,7 @@ export function entryToString(
   const prefix = showTimestamp
     ? `${formatTimeStamp(timestamp)}${c.bold.blueBright("│")} `
     : "";
-  const indent = c.grey(
-    `│ `.repeat(Math.max(0, depth - 1)) + entry.parent?.identifier
-  );
+  const indent = c.grey(`│ `.repeat(depth));
   const id = c.bold.white(`${identifier}: `);
   const dataStr = args ? dataToString(args, options) : "";
 

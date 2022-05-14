@@ -1,0 +1,95 @@
+{
+  "id": 0,
+  "timestamp": "2022-05-14T10:01:53.060Z",
+  "identifier": "__ROOT__",
+  "children": [
+    {
+      "id": 1,
+      "timestamp": "2022-05-14T10:01:53.061Z",
+      "identifier": "foo",
+      "args": [],
+      "children": [
+        {
+          "id": 2,
+          "timestamp": "2022-05-14T10:01:53.061Z",
+          "identifier": "bar",
+          "args": [1],
+          "children": [
+            {
+              "id": 3,
+              "timestamp": "2022-05-14T10:01:53.061Z",
+              "identifier": "baz",
+              "args": [1, {}, "2022-05-14T10:01:53.061Z"],
+              "children": [
+                {
+                  "id": 4,
+                  "timestamp": "2022-05-14T10:01:53.061Z",
+                  "identifier": "bez",
+                  "args": [],
+                  "children": [
+                    {
+                      "id": 5,
+                      "timestamp": "2022-05-14T10:01:53.061Z",
+                      "identifier": "efg",
+                      "args": [3, false, ["a", "b", true]],
+                      "children": []
+                    },
+                    {
+                      "id": 6,
+                      "timestamp": "2022-05-14T10:01:53.061Z",
+                      "identifier": "abc",
+                      "args": [3, true],
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": 7,
+                  "timestamp": "2022-05-14T10:01:53.062Z",
+                  "identifier": "xyz",
+                  "args": [
+                    4,
+                    {
+                      "x": 1
+                    }
+                  ],
+                  "children": []
+                },
+                {
+                  "id": 8,
+                  "timestamp": "2022-05-14T10:01:53.062Z",
+                  "identifier": "xyz",
+                  "args": [4],
+                  "children": [
+                    {
+                      "id": 9,
+                      "timestamp": "2022-05-14T10:01:53.062Z",
+                      "identifier": "xyz",
+                      "args": [5, null, null],
+                      "children": [
+                        {
+                          "id": 10,
+                          "timestamp": "2022-05-14T10:01:53.062Z",
+                          "identifier": "xyz",
+                          "args": [6, {}],
+                          "children": []
+                        },
+                        {
+                          "id": 11,
+                          "timestamp": "2022-05-14T10:01:53.062Z",
+                          "identifier": "xyz",
+                          "args": [6],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

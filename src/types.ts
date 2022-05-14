@@ -1,6 +1,7 @@
 export type Arguments = any[];
 
 export interface LogEntry {
+  id: number;
   timestamp: Date;
   identifier: string;
   args?: Arguments;

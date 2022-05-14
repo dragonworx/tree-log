@@ -1,4 +1,12 @@
-import { push, pop, log, stringify, clear, setIsLoggingEnabled } from "../src";
+import {
+  push,
+  pop,
+  log,
+  stringify,
+  clear,
+  setIsLoggingEnabled,
+  toJSON,
+} from "../src";
 
 setIsLoggingEnabled(true);
 
@@ -20,7 +28,8 @@ describe("Tree Log", () => {
       },
     });
     log("xyz", 6);
-    console.log(stringify());
+    // console.log(stringify());
+    console.log(toJSON());
   });
 });
 
