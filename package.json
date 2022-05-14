@@ -1,19 +1,19 @@
 {
-  "name": "@dragonworx/tree-log",
-  "version": "0.0.3",
-  "description": "Nested logging for debugging and testing",
+  "name": "turbo-log",
+  "version": "0.0.1",
+  "description": "Turbo powered logging for debugging and testing",
   "keywords": [
     "logging",
     "testing",
     "debugging"
   ],
-  "homepage": "https://github.com/dragonworx/tree-log",
+  "homepage": "https://github.com/dragonworx/turbo-log",
   "bugs": {
-    "url": "https://github.com/dragonworx/tree-log/issues"
+    "url": "https://github.com/dragonworx/turbo-log/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dragonworx/tree-log.git"
+    "url": "git+https://github.com/dragonworx/turbo-log.git"
   },
   "license": "MIT",
   "author": "",
@@ -33,7 +33,8 @@
     "rollup": "rollup -c tools/rollup.config.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "pack": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz"
+    "pack": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
+    "doc": "./node_modules/.bin/typedoc src/index.ts"
   },
   "dependencies": {
     "ansi-colors": "^4.1.1",
@@ -48,6 +49,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^27.1.3",
     "tsc-alias": "^1.3.9",
+    "typedoc": "^0.22.15",
     "typescript": "^4.4.2"
   },
   "publishConfig": {

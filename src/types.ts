@@ -1,14 +1,14 @@
-export type Data = any[];
+export type Arguments = any[];
 
 export interface LogEntry {
   timestamp: Date;
-  data?: Data;
+  identifier: string;
+  args?: Arguments;
   parent?: LogEntry;
   children: LogEntry[];
 }
 
 export interface StringifyOptions {
-  indentChar?: string;
   showTimestamp?: boolean;
   useColor?: boolean;
   stringProviderMethodName?: string;

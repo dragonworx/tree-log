@@ -1,16 +1,13 @@
-import { Data, LogEntry, StringifyOptions } from "./types";
+import { defaultStringifyOptions } from "./";
+import { Arguments, LogEntry, StringifyOptions } from "./types";
 const c = require("ansi-colors");
 
 // https://en.wikipedia.org/wiki/Alt_code
 
-export const defaultStringifyOptions: StringifyOptions = {
-  indentChar: ".",
-  showTimestamp: true,
-  useColor: true,
-  stringProviderMethodName: "asInfo",
-};
-
-export function dataToString(data: Data, options: StringifyOptions): string {
+export function dataToString(
+  data: Arguments,
+  options: StringifyOptions
+): string {
   const { useColor, stringProviderMethodName } = {
     ...defaultStringifyOptions,
     ...options,
@@ -26,9 +23,9 @@ export function dataToString(data: Data, options: StringifyOptions): string {
       } else if (type === "number") {
         return c.green(value);
       } else if (type === "boolean") {
-        return c.grey(value);
+        return c.cyanBright(value);
       } else if (value === null) {
-        return c.blueBright("null");
+        return c.grey("null");
       } else if (value === undefined) {
         return c.red("undefined");
       } else if (type === "object") {
@@ -62,20 +59,23 @@ export function entryToString(
   depth: number,
   options: StringifyOptions = {}
 ) {
-  const { indentChar, showTimestamp } = {
+  const { showTimestamp } = {
     ...defaultStringifyOptions,
     ...options,
   };
 
-  const indent = indentChar
-    ? c.grey(indentChar.repeat(Math.max(0, depth - 1)))
+  const { timestamp, identifier, args } = entry;
+
+  const prefix = showTimestamp
+    ? `${formatTimeStamp(timestamp)}${c.bold.blueBright("│")} `
     : "";
+  const indent = c.grey(
+    `│ `.repeat(Math.max(0, depth - 1)) + entry.parent?.identifier
+  );
+  const id = c.bold.white(`${identifier}: `);
+  const dataStr = args ? dataToString(args, options) : "";
 
-  const dataStr = entry.data ? dataToString(entry.data, options) : "";
-
-  const prefix = `${formatTimeStamp(entry.timestamp)}│ `;
-
-  return `${showTimestamp ? prefix : ""}${indent}${dataStr}`;
+  return `${prefix}${indent}${id}${dataStr}`;
 }
 
 export function formatTimeStamp(date: Date) {

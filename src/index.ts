@@ -1,9 +1,12 @@
 import { LogEntry, StringifyOptions, State } from "./types";
 import { entryToString } from "./util";
 
+const RootIdentifier = "";
+
 const state: State = (() => {
   const entry: LogEntry = {
     timestamp: new Date(),
+    identifier: RootIdentifier,
     children: [],
   };
   return {
@@ -13,25 +16,31 @@ const state: State = (() => {
   };
 })();
 
-export function setEnabled(isEnabled: boolean) {
-  state.isEnabled = isEnabled;
-}
-
-export function clear() {
-  state.root = state.head = {
-    timestamp: new Date(),
-    children: [],
-  };
-}
-
-export function push(...data: any[]) {
+export function log(identifier: string, ...args: any[]) {
   if (!state.isEnabled) {
     return;
   }
 
   const entry: LogEntry = {
     timestamp: new Date(),
-    data,
+    identifier,
+    args,
+    children: [],
+  };
+
+  state.head.children.push(entry);
+  entry.parent = state.head;
+}
+
+export function push(identifier: string, ...args: any[]) {
+  if (!state.isEnabled) {
+    return;
+  }
+
+  const entry: LogEntry = {
+    timestamp: new Date(),
+    identifier,
+    args,
     children: [],
   };
 
@@ -50,32 +59,18 @@ export function pop() {
   }
 }
 
-export function log(...data: any[]) {
-  if (!state.isEnabled) {
-    return;
-  }
-
-  const entry: LogEntry = {
-    timestamp: new Date(),
-    data,
-    children: [],
-  };
-
-  state.head.children.push(entry);
-  entry.parent = state.head;
-}
-
-const defaultOptions: StringifyOptions = {
-  indentChar: ".",
+export const defaultStringifyOptions: StringifyOptions = {
   showTimestamp: true,
+  useColor: true,
+  stringProviderMethodName: "toLogInfo",
 };
 
-export function stringify(options: StringifyOptions = defaultOptions) {
+export function stringify(options: StringifyOptions = defaultStringifyOptions) {
   return _stringify(options, state.root, 0, []);
 }
 
 function _stringify(
-  options: StringifyOptions = defaultOptions,
+  options: StringifyOptions = defaultStringifyOptions,
   entry: LogEntry = state.root,
   depth: number,
   buffer: string[]
@@ -83,6 +78,7 @@ function _stringify(
   if (entry !== state.root) {
     buffer.push(entryToString(entry, depth, options));
   }
+
   entry.children.forEach((childEntry) =>
     _stringify(
       options,
@@ -92,4 +88,21 @@ function _stringify(
     )
   );
   return buffer.join("\n");
+}
+
+/**
+ * Toggle whether logging is enabled.
+ * Disabled logging is a no-op and will not retain any data or produce any results for stringify()
+ * @param isEnabled
+ */
+export function setIsLoggingEnabled(isEnabled: boolean) {
+  state.isEnabled = isEnabled;
+}
+
+export function clear() {
+  state.root = state.head = {
+    timestamp: new Date(),
+    identifier: RootIdentifier,
+    children: [],
+  };
 }

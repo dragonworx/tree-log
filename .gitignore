@@ -248,3 +248,4 @@ dist/
 example/node_modules
 temp/*
 yarn.lock
+docs/*

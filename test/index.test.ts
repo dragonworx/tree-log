@@ -1,35 +1,32 @@
-import { push, pop, log, stringify, setEnabled } from "../src";
+import { push, pop, log, stringify, clear, setIsLoggingEnabled } from "../src";
 
-setEnabled(true);
+setIsLoggingEnabled(true);
 
-describe("Log", () => {
-  it("should", () => {
+describe("Tree Log", () => {
+  it("should log passed arguments", () => {
     log("foo");
-    push("foo.bar", 1);
-    log(1, /a/g, new Date());
-    push("baz");
-    log(3, false, ["a", "b", true]);
-    log(3, true);
+    push("bar", 1);
+    log("baz", 1, /a/g, new Date());
+    push("bez");
+    log("efg", 3, false, ["a", "b", true]);
+    log("abc", 3, true);
     pop();
-    log(4, { x: 1 });
-    log(4);
-    push(5, null, undefined);
-    log(6, {
-      asInfo() {
+    log("xyz", 4, { x: 1 });
+    log("xyz", 4);
+    push("xyz", 5, null, undefined);
+    log("xyz", 6, {
+      toLogInfo() {
         return { x: 1, y: 2, w: { z: [1, 2, true] } };
       },
     });
-    log(6);
-
-    console.log(
-      "\n\n\n" +
-        stringify({
-          showTimestamp: true,
-          useColor: true,
-        }) +
-        "\n\n\n"
-    );
-
-    expect(true).toBeTruthy();
+    log("xyz", 6);
+    console.log(stringify());
   });
 });
+
+/**
+ * │
+ * ├
+ * ─
+ * └
+ */
