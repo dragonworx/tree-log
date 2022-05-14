@@ -1,62 +1,57 @@
-import { LogEntry, StringifyOptions, State } from "./types";
-import { entryToString } from "./util";
+import {
+  LogNode,
+  LogEntry,
+  StringifyOptions,
+  State,
+  LogItem,
+  LogDetail,
+} from "./types";
+import { entryToString } from "./format";
 
-const RootIdentifier = "__ROOT__";
-
-let id = 0;
-const nextId = () => ++id;
+const RootIdentifier = "__root__";
 
 const state: State = (() => {
-  const entry: LogEntry = {
-    id,
+  const root: LogNode = {
     timestamp: new Date(),
     identifier: RootIdentifier,
     children: [],
   };
+
   return {
     isEnabled: true,
-    root: entry,
-    head: entry,
+    root,
+    head: root,
   };
 })();
 
-export function log(identifier: string, ...args: any[]) {
+export function log(identifier: string, ...data: any[]) {
   if (!state.isEnabled) {
     return;
   }
 
   const entry: LogEntry = {
-    id: nextId(),
     timestamp: new Date(),
     identifier,
-    args,
-    children: [],
+    data,
   };
 
   state.head.children.push(entry);
-  entry.parent = state.head;
 }
 
-export function push(identifier: string, ...args: any[]) {
+export function push(identifier: string) {
   if (!state.isEnabled) {
     return;
   }
 
-  const parent = state.head.children.length
-    ? state.head.children[state.head.children.length - 1]
-    : state.head;
-
-  const entry: LogEntry = {
-    id: nextId(),
+  const node: LogNode = {
     timestamp: new Date(),
     identifier,
-    args,
-    parent,
+    parent: state.head,
     children: [],
   };
 
-  parent.children.push(entry);
-  state.head = entry;
+  state.head.children.push(node);
+  state.head = node;
 }
 
 export function pop() {
@@ -75,44 +70,43 @@ export const defaultStringifyOptions: StringifyOptions = {
   stringProviderMethodName: "toLogInfo",
 };
 
-export function stringify(options: StringifyOptions = defaultStringifyOptions) {
-  return _stringify(options, state.root, 0, []);
+export function render(options: StringifyOptions = defaultStringifyOptions) {
+  return _render(state.root, state.root, -1, [], options);
 }
 
-function _stringify(
-  options: StringifyOptions = defaultStringifyOptions,
-  entry: LogEntry = state.root,
+function _render(
+  entry: LogNode = state.root,
+  previousDetail: LogDetail,
   depth: number,
-  buffer: string[]
+  buffer: string[],
+  options: StringifyOptions = defaultStringifyOptions
 ) {
   if (entry !== state.root) {
-    buffer.push(entryToString(entry, depth, options));
+    buffer.push(entryToString(entry, previousDetail, depth, options));
   }
 
-  entry.children.forEach((childEntry) =>
-    _stringify(
-      options,
-      childEntry,
-      depth + (childEntry.children.length ? 2 : 1),
-      buffer
-    )
-  );
+  entry.children.forEach((item, i) => {
+    if ("parent" in item) {
+      _render(item, entry, depth + 2, buffer, options);
+    } else {
+      buffer.push(
+        entryToString(item, entry, depth + 1, {
+          ...options,
+          isLastChild: i === entry.children.length - 1,
+        })
+      );
+    }
+  });
+
   return buffer.join("\n");
 }
 
-/**
- * Toggle whether logging is enabled.
- * Disabled logging is a no-op and will not retain any data or produce any results for stringify()
- * @param isEnabled
- */
-export function setIsLoggingEnabled(isEnabled: boolean) {
+export function enableLogging(isEnabled: boolean) {
   state.isEnabled = isEnabled;
 }
 
 export function clear() {
-  id = 0;
   state.root = state.head = {
-    id,
     timestamp: new Date(),
     identifier: RootIdentifier,
     children: [],
@@ -125,4 +119,8 @@ export function toJSON(space: number = 4) {
     (key, value) => (key === "parent" ? undefined : value),
     space
   );
+}
+
+export function root() {
+  return state.root;
 }

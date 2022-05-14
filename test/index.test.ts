@@ -1,41 +1,78 @@
 import {
+  enableLogging,
+  clear,
+  log,
   push,
   pop,
-  log,
-  stringify,
-  clear,
-  setIsLoggingEnabled,
+  render,
   toJSON,
+  root,
 } from "../src";
+import { LogEntry } from "../src/types";
 
-setIsLoggingEnabled(true);
+enableLogging(true);
 
 describe("Tree Log", () => {
-  it("should log passed arguments", () => {
-    log("foo");
-    push("bar", 1);
-    log("baz", 1, /a/g, new Date());
-    push("bez");
-    log("efg", 3, false, ["a", "b", true]);
-    log("abc", 3, true);
+  beforeEach(() => {
+    clear();
+  });
+
+  describe("Logging", () => {
+    const args = [1, "two", true];
+
+    const setup = () => {
+      log("some-identifier", ...args);
+      const children = root().children;
+      const entry = children[0] as LogEntry;
+      return { children, entry };
+    };
+
+    it("should capture identifier", () => {
+      const { children, entry } = setup();
+      expect(children).toHaveLength(1);
+      expect(entry.identifier).toBe("some-identifier");
+    });
+
+    it("should capture data", () => {
+      const { entry } = setup();
+      expect(entry.data).toEqual(args);
+    });
+
+    it("should capture timestamp", () => {
+      const { entry } = setup();
+      expect(entry.timestamp).toBeInstanceOf(Date);
+    });
+  });
+
+  it("should match snapshot", (done) => {
+    log("1");
+    push("2");
+    log("2.1", 1, /a/g, new Date());
+    push("3");
+    log("3.1", 3, false, ["a", "b", true]);
+    log("3.2", 3, true);
     pop();
-    log("xyz", 4, { x: 1 });
-    log("xyz", 4);
-    push("xyz", 5, null, undefined);
-    log("xyz", 6, {
+    log("2.2", 4, { x: 1 });
+    pop();
+    log("1.1", 4, null, undefined);
+    push("2");
+    log("2.1", 6, {
       toLogInfo() {
         return { x: 1, y: 2, w: { z: [1, 2, true] } };
       },
     });
-    log("xyz", 6);
-    // console.log(stringify());
-    console.log(toJSON());
+    setTimeout(() => {
+      pop();
+      log("1.3", 6);
+
+      const output = render({
+        useColor: true,
+        useTimeDelta: true,
+      });
+
+      console.log(output);
+      // expect(output).toMatchSnapshot();
+      done();
+    }, 1000);
   });
 });
-
-/**
- * │
- * ├
- * ─
- * └
- */
