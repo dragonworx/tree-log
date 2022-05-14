@@ -14,6 +14,18 @@ export interface LogEntry extends LogDetail {
   data?: Arguments;
 }
 
+export interface LogTrace extends LogEntry {
+  depth?: number;
+  isLastChild?: boolean;
+  isNode?: boolean;
+}
+
+export interface LogTraceDetail {
+  depth: number;
+  isLastChild: boolean;
+  isNode: boolean;
+}
+
 export type LogItem = LogNode | LogEntry;
 
 export interface StringifyOptions {

@@ -1,5 +1,11 @@
 import { defaultStringifyOptions } from ".";
-import { Arguments, LogDetail, LogEntry, StringifyOptions } from "./types";
+import {
+  Arguments,
+  LogDetail,
+  LogEntry,
+  LogTraceDetail,
+  StringifyOptions,
+} from "./types";
 const c = require("ansi-colors");
 
 // https://en.wikipedia.org/wiki/Alt_code
@@ -57,7 +63,7 @@ export function dataToString(
 export function entryToString(
   entry: LogEntry,
   previousDetail: LogDetail,
-  depth: number,
+  info: LogTraceDetail,
   options: StringifyOptions = {}
 ) {
   const { showTimestamp, isLastChild, useColor, useTimeDelta } = {
@@ -72,8 +78,10 @@ export function entryToString(
   const prefix = showTimestamp
     ? `${formatTimeStamp(entry, previousDetail, useTimeDelta!)} `
     : "";
-  const indent = c.grey(`│ `.repeat(depth) + (isLastChild ? "└" : "├"));
-  const id = c.bold.yellow(`${identifier} `);
+  const indent = c.grey(`│ `.repeat(info.depth) + (isLastChild ? "└" : "├"));
+  const id = info.isNode
+    ? c.bold.white.underline(`${identifier} `)
+    : c.bold.yellow(`${identifier} `);
   const dataStr = data ? dataToString(data, options) : "";
 
   return `${prefix}${indent}${id}${dataStr}`;
@@ -88,9 +96,11 @@ export function formatTimeStamp(
 
   if (useTimeDelta) {
     const previousTimestamp = previousDetail.timestamp;
-    const delta = timestamp.getTime() - previousTimestamp.getTime();
+    const delta = String(
+      timestamp.getTime() - previousTimestamp.getTime()
+    ).padStart(6, "0");
 
-    return `+${c.cyanBright(delta)}`;
+    return `+${c.cyanBright(delta)}${c.cyanBright("│")}`;
   } else {
     const dateStr = formatDate(timestamp);
     const timeStr = formatTime(timestamp);

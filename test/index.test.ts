@@ -5,7 +5,8 @@ import {
   push,
   pop,
   render,
-  toJSON,
+  json,
+  flatten,
   root,
 } from "../src";
 import { LogEntry } from "../src/types";
@@ -54,25 +55,30 @@ describe("Tree Log", () => {
     pop();
     log("2.2", 4, { x: 1 });
     pop();
-    log("1.1", 4, null, undefined);
-    push("2");
-    log("2.1", 6, {
-      toLogInfo() {
-        return { x: 1, y: 2, w: { z: [1, 2, true] } };
-      },
-    });
-    setTimeout(() => {
-      pop();
-      log("1.3", 6);
 
-      const output = render({
-        useColor: true,
-        useTimeDelta: true,
+    setTimeout(() => {
+      log("1.1", 4, null, undefined);
+      push("2");
+      log("2.1", 6, {
+        toLogInfo() {
+          return { x: 1, y: 2, w: { z: [1, 2, true] } };
+        },
       });
 
-      console.log(output);
-      // expect(output).toMatchSnapshot();
-      done();
-    }, 1000);
+      setTimeout(() => {
+        pop();
+        log("1.3", 6);
+
+        const output = render({
+          useColor: true,
+          useTimeDelta: true,
+        });
+
+        console.log(output);
+        console.log(JSON.stringify(flatten(true), null, 4));
+        // expect(output).toMatchSnapshot();
+        done();
+      }, 1000);
+    }, 500);
   });
 });

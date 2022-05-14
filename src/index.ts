@@ -5,6 +5,8 @@ import {
   State,
   LogItem,
   LogDetail,
+  LogTrace,
+  LogTraceDetail,
 } from "./types";
 import { entryToString } from "./format";
 
@@ -64,6 +66,65 @@ export function pop() {
   }
 }
 
+export function flatten(withInfo: boolean = false) {
+  const buffer: Array<LogTrace> = [];
+  _flatten(
+    state.root,
+    buffer,
+    withInfo ? { depth: -2, isLastChild: false, isNode: true } : undefined
+  );
+  return buffer;
+}
+
+function _flatten(
+  entry: LogEntry,
+  buffer: Array<LogTrace>,
+  info?: LogTraceDetail
+) {
+  if (isNode(entry)) {
+    if (!isRoot(entry)) {
+      buffer.push({
+        timestamp: entry.timestamp,
+        identifier: entry.identifier,
+        depth: info ? info.depth + 1 : undefined,
+        isLastChild: info?.isLastChild,
+        isNode: info?.isNode,
+      });
+    }
+
+    entry.children.forEach((child, i) =>
+      _flatten(
+        child,
+        buffer,
+        info
+          ? {
+              depth: info.depth + 2,
+              isLastChild: i === entry.children.length - 1,
+              isNode: isNode(child),
+            }
+          : undefined
+      )
+    );
+  } else {
+    buffer.push({
+      timestamp: entry.timestamp,
+      identifier: entry.identifier,
+      data: entry.data,
+      depth: info ? info.depth : undefined,
+      isLastChild: info ? info.isLastChild : undefined,
+      isNode: info?.isNode,
+    });
+  }
+}
+
+function isNode(item: LogItem): item is LogNode {
+  return "parent" in item || item === state.root;
+}
+
+function isRoot(item: LogItem) {
+  return item === state.root;
+}
+
 export const defaultStringifyOptions: StringifyOptions = {
   showTimestamp: true,
   useColor: true,
@@ -71,31 +132,25 @@ export const defaultStringifyOptions: StringifyOptions = {
 };
 
 export function render(options: StringifyOptions = defaultStringifyOptions) {
-  return _render(state.root, state.root, -1, [], options);
-}
+  const flat = flatten(true);
+  const buffer: Array<string> = [];
 
-function _render(
-  entry: LogNode = state.root,
-  previousDetail: LogDetail,
-  depth: number,
-  buffer: string[],
-  options: StringifyOptions = defaultStringifyOptions
-) {
-  if (entry !== state.root) {
-    buffer.push(entryToString(entry, previousDetail, depth, options));
-  }
-
-  entry.children.forEach((item, i) => {
-    if ("parent" in item) {
-      _render(item, entry, depth + 2, buffer, options);
-    } else {
-      buffer.push(
-        entryToString(item, entry, depth + 1, {
+  flat.forEach((entry, i) => {
+    buffer.push(
+      entryToString(
+        entry,
+        i > 0 ? flat[i - 1] : entry,
+        {
+          depth: entry.depth!,
+          isLastChild: entry.isLastChild!,
+          isNode: entry.isNode!,
+        },
+        {
           ...options,
-          isLastChild: i === entry.children.length - 1,
-        })
-      );
-    }
+          isLastChild: entry.isLastChild!,
+        }
+      )
+    );
   });
 
   return buffer.join("\n");
@@ -113,7 +168,7 @@ export function clear() {
   };
 }
 
-export function toJSON(space: number = 4) {
+export function json(space: number = 4) {
   return JSON.stringify(
     state.root,
     (key, value) => (key === "parent" ? undefined : value),
