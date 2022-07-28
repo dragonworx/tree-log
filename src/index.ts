@@ -66,12 +66,12 @@ export function pop() {
   }
 }
 
-export function flatten(withInfo: boolean = false) {
+export function flatten(withDetail: boolean = false) {
   const buffer: Array<LogTrace> = [];
   _flatten(
     state.root,
     buffer,
-    withInfo ? { depth: -2, isLastChild: false, isNode: true } : undefined
+    withDetail ? { depth: -2, isLastChild: false, isNode: true } : undefined
   );
   return buffer;
 }
@@ -156,7 +156,7 @@ export function render(options: StringifyOptions = defaultStringifyOptions) {
   return buffer.join("\n");
 }
 
-export function enableLogging(isEnabled: boolean) {
+export function setEnabled(isEnabled: boolean) {
   state.isEnabled = isEnabled;
 }
 
@@ -168,12 +168,24 @@ export function clear() {
   };
 }
 
-export function json(space: number = 4) {
-  return JSON.stringify(
-    state.root,
-    (key, value) => (key === "parent" ? undefined : value),
-    space
-  );
+export function toArray() {
+  const buffer: LogEntry[] = [];
+  state.root.children.forEach((child) => _toArray(child, buffer));
+  return buffer;
+}
+
+function _toArray(logItem: LogItem, buffer: LogEntry[]) {
+  const entry: LogEntry = {
+    timestamp: logItem.timestamp,
+    identifier: logItem.identifier,
+    data: isNode(logItem) ? undefined : logItem.data,
+  };
+  buffer.push(entry);
+  if (isNode(logItem)) {
+    const childBuffer: LogEntry[] = [];
+    entry.children = childBuffer;
+    logItem.children.forEach((child) => _toArray(child, childBuffer));
+  }
 }
 
 export function root() {

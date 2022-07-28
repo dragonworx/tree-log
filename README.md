@@ -66,6 +66,6 @@ Disabled logging does not collect any data in memory and adds neglible to zero p
 
 ## Use Cases
 
-This library is lightweight and can be used a general purpose logging tool. Logging is retained in memory and be serialised when needed. Being able to nest statements creates a great tool for diagnostics, troublshooting, performance tuning, and application state changes.
+This library is lightweight and can be used a general purpose logging tool. Logging is retained in memory and be serialised when needed. Being able to nest statements creates a great tool for diagnostics, troublshooting, performance tuning, and application state changes. Logging statements can be left in production code while turning off any overhead with `
 
 Since the log can be serialised with or without a timestamp, or color, it can be used as a snapshot for integration testing (eg. using Jest text snapshots). Having your application log during testing and then comparing that serialised log to the previous snapshotted serialised log will uncover any changes in determinism, order of events, race conditions, or over calling.

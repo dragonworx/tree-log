@@ -12,6 +12,7 @@ export interface LogNode extends LogDetail {
 
 export interface LogEntry extends LogDetail {
   data?: Arguments;
+  children?: LogEntry[];
 }
 
 export interface LogTrace extends LogEntry {

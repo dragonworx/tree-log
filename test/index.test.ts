@@ -1,17 +1,17 @@
 import {
-  enableLogging,
+  setEnabled,
   clear,
   log,
   push,
   pop,
   render,
-  json,
+  toArray,
   flatten,
   root,
 } from "../src";
 import { LogEntry } from "../src/types";
 
-enableLogging(true);
+setEnabled(true);
 
 describe("Tree Log", () => {
   beforeEach(() => {
@@ -48,7 +48,7 @@ describe("Tree Log", () => {
   it("should match snapshot", (done) => {
     log("1");
     push("2");
-    log("2.1", 1, /a/g, new Date());
+    log("2.1", 1, /a/g, new Date(1659007228539));
     push("3");
     log("3.1", 3, false, ["a", "b", true]);
     log("3.2", 3, true);
@@ -69,14 +69,20 @@ describe("Tree Log", () => {
         pop();
         log("1.3", 6);
 
-        const output = render({
-          useColor: true,
-          useTimeDelta: true,
+        const outputSnapshot = render({
+          useColor: false,
+          showTimestamp: false,
         });
 
-        console.log(output);
-        console.log(JSON.stringify(flatten(true), null, 4));
-        // expect(output).toMatchSnapshot();
+        const outputFull = render({
+          useColor: false,
+          showTimestamp: false,
+        });
+
+        console.log(outputFull);
+        console.log(JSON.stringify(toArray(), null, 4));
+        console.log(JSON.stringify(flatten(false), null, 4));
+        expect(outputSnapshot).toMatchSnapshot();
         done();
       }, 1000);
     }, 500);
