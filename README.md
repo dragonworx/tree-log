@@ -35,12 +35,14 @@ log(6);
 
 ### Serialising Log Output
 
-Use `stringify()` to create a string output, passing any required options.
+Use `renderLog(options?: StringifyOptions): string` to create a string output, passing any required options.
 
 ```javascript
+import { renderLog } from "turbo-log";
+
 console.log(
-  stringify({
-    showTimestamp: true,
+  renderLog({
+    showTimeStamp: true,
     useColor: true,
   })
 );
@@ -48,21 +50,24 @@ console.log(
 
 ![Example Output](./doc/output1.png)
 
-### Logging Custom Objects
+The following options can be passed to `renderLog()` via a `RenderOptions` object with these optional properties.
 
-Any objects logged that implement an `asInfo()` function/method can provide a custom representation that will become the log output for that object. The `stringify()` option `stringProviderMethodName` can be used to configure what this function name is, defaults to `asInfo`.
+- `showTimeStamp: boolean` - Show the timestamp prefix for each line (defaultst to `true`)
+- `useTimeDelta: boolean` - Use the milliseconds delta since the last entry, or use the full date and time (defaults to `false`)
+- `useColor: boolean` - Output using ansi color codes, or just plain text (defaults to `true`)
+- `stringProviderMethodName: string` - When converting argument objects to strings this method will be attempted to call, falling back to native string conversion for that type. This makes objects "log aware" if needed (defaults to `toLogInfo`)
 
 ### Enabling/Disabling Logging
 
 Logging can be disabled for production scenarios via the `setEnabled()` function.
 
 ```javascript
-import { setEnabled } from "tree-log";
+import { setLogEnabled } from "tree-log";
 
-setEnabled(!!process.env.LOGGING);
+setLogEnabled(!!process.env.LOGGING);
 ```
 
-Disabled logging does not collect any data in memory and adds neglible to zero performance overheads. This allows logging code to remain in the application, and turned on when testing or debugging during development.
+Disabled logging means there is no data collected in memory and adds zero performance overheads as the logging functions are skipped. This allows logging code to remain in the application, and be turned on when testing or debugging during development. This makes logging more of a first class diagnostics tool within the application.
 
 ## Use Cases
 

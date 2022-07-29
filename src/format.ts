@@ -1,21 +1,19 @@
-import { defaultStringifyOptions } from ".";
+import { defaultRenderOptions } from ".";
 import {
   Arguments,
   LogDetail,
   LogEntry,
   LogTraceDetail,
-  StringifyOptions,
+  RenderOptions,
 } from "./types";
-const c = require("ansi-colors");
 
-// https://en.wikipedia.org/wiki/Alt_code
+const clr = require("ansi-colors");
 
-export function dataToString(
-  data: Arguments,
-  options: StringifyOptions
-): string {
+// alt code references: https://en.wikipedia.org/wiki/Alt_code
+
+export function dataToString(data: Arguments, options: RenderOptions): string {
   const { stringProviderMethodName } = {
-    ...defaultStringifyOptions,
+    ...defaultRenderOptions,
     ...options,
   };
 
@@ -23,26 +21,26 @@ export function dataToString(
     .map((value) => {
       const type = typeof value;
       if (type === "string") {
-        return c.white(`"${value}"`);
+        return clr.white(`"${value}"`);
       } else if (type === "number") {
-        return c.green(value);
+        return clr.green(value);
       } else if (type === "boolean") {
-        return c.magenta(value);
+        return clr.magenta(value);
       } else if (value === null) {
-        return c.red("null");
+        return clr.red("null");
       } else if (value === undefined) {
-        return c.red("undefined");
+        return clr.red("undefined");
       } else if (type === "object") {
         const proto = value.__proto__.constructor.name;
         if (proto === "Array") {
           return "[" + dataToString(value, options) + "]";
         } else if (proto === "Date") {
-          return c.cyanBright(`${formatDate(value)} ${formatTime(value)}`);
+          return clr.cyanBright(`${formatDate(value)} ${formatTime(value)}`);
         } else if (proto === "RegExp") {
           const regex = value as RegExp;
-          return c.cyanBright(`/${regex.source}/${regex.flags}`);
+          return clr.cyanBright(`/${regex.source}/${regex.flags}`);
         } else {
-          return c.cyanBright(
+          return clr.cyanBright(
             stringProviderMethodName! in value
               ? dataToString([value[stringProviderMethodName!]()], options)
               : "{ " +
@@ -57,31 +55,36 @@ export function dataToString(
       }
       return value;
     })
-    .join(c.grey(", "));
+    .join(clr.grey(", "));
 }
 
 export function entryToString(
   entry: LogEntry,
   previousDetail: LogDetail,
   info: LogTraceDetail,
-  options: StringifyOptions = {}
+  options: RenderOptions & { isLastChild: boolean } = { isLastChild: true }
 ) {
-  const { showTimestamp, isLastChild, useColor, useTimeDelta } = {
-    ...defaultStringifyOptions,
+  const {
+    showTimeStamp: showTimestamp,
+    isLastChild,
+    useColor,
+    useTimeDelta,
+  } = {
+    ...defaultRenderOptions,
     ...options,
   };
 
-  c.enabled = !!useColor;
+  clr.enabled = !!useColor;
 
   const { identifier, data } = entry;
 
   const prefix = showTimestamp
     ? `${formatTimeStamp(entry, previousDetail, useTimeDelta!)} `
     : "";
-  const indent = c.grey(`│ `.repeat(info.depth) + (isLastChild ? "└" : "├"));
+  const indent = clr.grey(`│ `.repeat(info.depth) + (isLastChild ? "└" : "├"));
   const id = info.isNode
-    ? c.bold.white.underline(`${identifier} `)
-    : c.bold.yellow(`${identifier} `);
+    ? clr.bold.white.underline(`${identifier} `)
+    : clr.bold.yellow(`${identifier} `);
   const dataStr = data ? dataToString(data, options) : "";
 
   return `${prefix}${indent}${id}${dataStr}`;
@@ -100,12 +103,12 @@ export function formatTimeStamp(
       timestamp.getTime() - previousTimestamp.getTime()
     ).padStart(6, "0");
 
-    return `+${c.cyanBright(delta)}${c.cyanBright("│")}`;
+    return `+${clr.cyanBright(delta)}${clr.cyanBright("│")}`;
   } else {
     const dateStr = formatDate(timestamp);
     const timeStr = formatTime(timestamp);
 
-    return `${c.blue(dateStr + "│")}${c.cyanBright(timeStr + "│")}`;
+    return `${clr.blue(dateStr + "│")}${clr.cyanBright(timeStr + "│")}`;
   }
 }
 

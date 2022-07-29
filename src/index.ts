@@ -1,10 +1,9 @@
 import {
   LogNode,
   LogEntry,
-  StringifyOptions,
+  RenderOptions,
   State,
   LogItem,
-  LogDetail,
   LogTrace,
   LogTraceDetail,
 } from "./types";
@@ -40,7 +39,7 @@ export function log(identifier: string, ...data: any[]) {
   state.head.children.push(entry);
 }
 
-export function push(identifier: string) {
+export function pushLog(identifier: string) {
   if (!state.isEnabled) {
     return;
   }
@@ -56,7 +55,7 @@ export function push(identifier: string) {
   state.head = node;
 }
 
-export function pop() {
+export function popLog() {
   if (!state.isEnabled) {
     return;
   }
@@ -125,13 +124,14 @@ function isRoot(item: LogItem) {
   return item === state.root;
 }
 
-export const defaultStringifyOptions: StringifyOptions = {
-  showTimestamp: true,
+export const defaultRenderOptions: RenderOptions = {
+  showTimeStamp: true,
+  useTimeDelta: false,
   useColor: true,
   stringProviderMethodName: "toLogInfo",
 };
 
-export function render(options: StringifyOptions = defaultStringifyOptions) {
+export function renderLog(options: RenderOptions = defaultRenderOptions) {
   const flat = flatten(true);
   const buffer: Array<string> = [];
 
@@ -156,7 +156,7 @@ export function render(options: StringifyOptions = defaultStringifyOptions) {
   return buffer.join("\n");
 }
 
-export function setEnabled(isEnabled: boolean) {
+export function setLogEnabled(isEnabled: boolean) {
   state.isEnabled = isEnabled;
 }
 

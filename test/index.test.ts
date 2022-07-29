@@ -1,17 +1,17 @@
 import {
-  setEnabled,
+  setLogEnabled,
   clear,
   log,
-  push,
-  pop,
-  render,
+  pushLog,
+  popLog,
+  renderLog,
   toArray,
   flatten,
   root,
 } from "../src";
 import { LogEntry } from "../src/types";
 
-setEnabled(true);
+setLogEnabled(true);
 
 describe("Tree Log", () => {
   beforeEach(() => {
@@ -45,20 +45,20 @@ describe("Tree Log", () => {
     });
   });
 
-  it("should match snapshot", (done) => {
+  it("should match snapshot for output", (done) => {
     log("1");
-    push("2");
+    pushLog("2");
     log("2.1", 1, /a/g, new Date(0));
-    push("3");
+    pushLog("3");
     log("3.1", 3, false, ["a", "b", true]);
     log("3.2", 3, true);
-    pop();
+    popLog();
     log("2.2", 4, { x: 1 });
-    pop();
+    popLog();
 
     setTimeout(() => {
       log("1.1", 4, null, undefined);
-      push("2");
+      pushLog("2");
       log("2.1", 6, {
         toLogInfo() {
           return { x: 1, y: 2, w: { z: [1, 2, true] } };
@@ -66,22 +66,23 @@ describe("Tree Log", () => {
       });
 
       setTimeout(() => {
-        pop();
+        popLog();
         log("1.3", 6);
 
-        const outputSnapshot = render({
+        const outputSnapshot = renderLog({
           useColor: false,
-          showTimestamp: false,
+          showTimeStamp: false,
         });
 
-        const outputFull = render({
-          useColor: false,
-          showTimestamp: false,
+        const outputFull = renderLog({
+          useColor: true,
+          showTimeStamp: true,
+          useTimeDelta: true,
         });
 
         console.log(outputFull);
-        console.log(JSON.stringify(toArray(), null, 4));
-        console.log(JSON.stringify(flatten(false), null, 4));
+        console.log("toArray:", JSON.stringify(toArray(), null, 4));
+        console.log("flatten:", JSON.stringify(flatten(false), null, 4));
         expect(outputSnapshot).toMatchSnapshot();
         done();
       }, 1000);

@@ -29,12 +29,11 @@ export interface LogTraceDetail {
 
 export type LogItem = LogNode | LogEntry;
 
-export interface StringifyOptions {
-  showTimestamp?: boolean;
+export interface RenderOptions {
+  showTimeStamp?: boolean;
   useTimeDelta?: boolean;
   useColor?: boolean;
   stringProviderMethodName?: string;
-  isLastChild?: boolean;
 }
 
 export interface State {
