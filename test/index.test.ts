@@ -48,7 +48,7 @@ describe("Tree Log", () => {
   it("should match snapshot", (done) => {
     log("1");
     push("2");
-    log("2.1", 1, /a/g, new Date(1659007228539));
+    log("2.1", 1, /a/g, new Date(0));
     push("3");
     log("3.1", 3, false, ["a", "b", true]);
     log("3.2", 3, true);
