@@ -82,7 +82,7 @@ describe("Tree Log", () => {
 
         console.log(outputFull);
         console.log("toArray:", JSON.stringify(toArray(), null, 4));
-        console.log("flatten:", JSON.stringify(flatten(false), null, 4));
+        console.log("flatten:", JSON.stringify(flatten(true), null, 4));
         expect(outputSnapshot).toMatchSnapshot();
         done();
       }, 1000);

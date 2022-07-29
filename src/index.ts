@@ -19,7 +19,7 @@ const state: State = (() => {
   };
 
   return {
-    isEnabled: true,
+    isEnabled: false,
     root,
     head: root,
   };

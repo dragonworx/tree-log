@@ -8,49 +8,45 @@ Works in both the **Browser** and **Node**.
 
 ### Logging & Nesting
 
-Pass arbitrary arguments to the `log(...)` function.
+Logging is broken down into individual log entries. Each entry consists of a string identifier, followed by any arbitrary values using the `log(identifier: string, ...data: any[])` function.
 
-Log entries can be nested by increasing or decreasing indentation via `push()` or `pop()`. The `push(...)` function also takes arbirtary arguments the same as `log()`. This creates a stack-like mechanism.
+The identifier should provide meaningful context to the point of the log statement and it's recommended to use a dot syntax to create domain context. The arbitrary values become the data of that log entry.
 
 ```javascript
-import { log, push, pop } from 'tree-log`;
+import { log } from "turbo-log";
 
-log("foo");
-push("foo.bar", 1);
-log(1, /a/g, new Date());
-push("baz");
-log(3, false, ["a", "b", true]);
-log(3, true);
-pop();
-log(4, { x: 1 });
-log(4);
-push(5, null, undefined);
-log(6, {
-  asInfo() {
-    return { x: 1, y: 2, w: { z: [1, 2, true] } };
-  },
-});
-log(6);
+log("some-identifier", value1, value2, value3);
 ```
 
-### Serialising Log Output
+Log entries can be nested by increasing or decreasing indentation via `pushLog(identifier: string)` or `popLog()`. This creates a stack-like mechanism.
 
-Use `renderLog(options?: StringifyOptions): string` to create a string output, passing any required options.
+```javascript
+import { log, pushLog, popLog } from "turbo-log";
+
+log("1");
+pushLog("2");
+log("2.1", 1, /a/g, new Date(0));
+pushLog("3");
+log("3.1", 3, false, ["a", "b", true]);
+log("3.2", 3, true);
+popLog();
+log("2.2", 4, { x: 1 });
+popLog();
+```
+
+### Rendering Log Output
+
+For output to console or terminal, use `renderLog(options?: RenderOptions): string` to return a string.
 
 ```javascript
 import { renderLog } from "turbo-log";
 
-console.log(
-  renderLog({
-    showTimeStamp: true,
-    useColor: true,
-  })
-);
+console.log(renderLog());
 ```
 
 ![Example Output](./doc/output1.png)
 
-The following options can be passed to `renderLog()` via a `RenderOptions` object with these optional properties.
+The following options can be passed to `renderLog()` via the `RenderOptions` object with these optional properties.
 
 - `showTimeStamp: boolean` - Show the timestamp prefix for each line (defaultst to `true`)
 - `useTimeDelta: boolean` - Use the milliseconds delta since the last entry, or use the full date and time (defaults to `false`)
@@ -59,7 +55,7 @@ The following options can be passed to `renderLog()` via a `RenderOptions` objec
 
 ### Enabling/Disabling Logging
 
-Logging can be disabled for production scenarios via the `setEnabled()` function.
+Logging can be disabled for production scenarios via the `setEnabled()` function. Logging is disabled by default and must be enabled for development.
 
 ```javascript
 import { setLogEnabled } from "tree-log";
@@ -68,6 +64,8 @@ setLogEnabled(!!process.env.LOGGING);
 ```
 
 Disabled logging means there is no data collected in memory and adds zero performance overheads as the logging functions are skipped. This allows logging code to remain in the application, and be turned on when testing or debugging during development. This makes logging more of a first class diagnostics tool within the application.
+
+Apart from environment variables set during build, it would also be possible for web applications to use localStorage, query parameters, or a hash value to enable logging dynamically. This would allow debugging in production without impacting default use cases. As with any logging, it's up to you to ensure you do not leak sensitive data while logging.
 
 ## Use Cases
 
