@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "es2015",
     "moduleResolution": "node",
     "skipLibCheck": false,
     "declaration": true,
     "sourceMap": true,
     "declarationMap": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "removeComments": true,
     "esModuleInterop": true,
     "pretty": true,

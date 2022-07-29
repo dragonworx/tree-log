@@ -37,12 +37,12 @@
     "doc": "./node_modules/.bin/typedoc src/index.ts"
   },
   "dependencies": {
-    "ansi-colors": "^4.1.1",
-    "tslib": "^2.3.1"
+    "ansi-colors": "^4.1.1"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@types/jest": "^27.4.0",
+    "@types/node": "^18.6.2",
     "jest": "^27.4.7",
     "rimraf": "^3.0.2",
     "rollup": "^2.72.1",
