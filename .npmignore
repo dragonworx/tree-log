@@ -7,3 +7,4 @@ tools
 jest.config.js
 tsconfig.json
 doc
+temp
