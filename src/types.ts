@@ -2,7 +2,7 @@ export type Arguments = any[];
 
 export interface LogDetail {
   timestamp: Date;
-  identifier: string;
+  label: string;
 }
 
 export interface LogNode extends LogDetail {
@@ -29,15 +29,16 @@ export interface LogTraceDetail {
 
 export type LogItem = LogNode | LogEntry;
 
-export interface RenderOptions {
-  showTimeStamp?: boolean;
-  useTimeDelta?: boolean;
-  useColor?: boolean;
-  stringProviderMethodName?: string;
-}
-
 export interface State {
-  isEnabled: boolean;
+  options: LogOptions;
   root: LogNode;
   head: LogNode;
+}
+
+export interface LogOptions {
+  enabled: boolean;
+  showTimeStamp: boolean;
+  useTimeDelta: boolean;
+  useColor: boolean;
+  stringProviderMethodName: string;
 }
