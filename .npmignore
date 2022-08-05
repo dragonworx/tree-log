@@ -9,3 +9,12 @@ tsconfig.json
 doc
 temp
 src
+*release*
+*eslint*
+.npmignore
+.prettierignore
+.commitlintrc
+.prettierrc
+.eslintignore
+.release-please-manifest.json
+.eslintrc.json
