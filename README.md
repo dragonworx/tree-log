@@ -5,7 +5,7 @@
 
 Simple but powerful nested logging for debugging and testing!
 
-Works in both the **Browser** and **Node**.
+Currently only supported for **NodeJS**, **Browser** support coming soon!
 
 ## Install
 
@@ -187,12 +187,13 @@ it('should match snapshot', () => {
 
 This project is actively under development. The following features are planned for upcoming releases.
 
-| Feature                    | Bump    | Description                                                                                                                                  |
-| -------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Realtime logging**       | `minor` | Currently logging needs to be rendered and printed to the console as needed. Will provide a setting to stream log to the console in realtime |
-| **Log buffer limit**       | `minor` | Current log buffer is unlimited. Will provide an API to adjust max length and purge last in when limit exceeded                              |
-| **Expose log buffer**      | `minor` | The log buffer will be exposed which will allow for custom queries on log details                                                            |
-| **Multi-Instance Logging** | `major` | Currently there is only one log buffer. Would like to make the ability to create multiple log buffers, to isolate diagnostics as needed      |
+| Feature                    | Bump    | Description                                                                                                                                      |
+| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Browser Support**        | `minor` | Currently only working for NodeJS environments due to dependency on `ansi-colors`. Rewriting color functionality to work across node and browser |
+| **Realtime logging**       | `minor` | Currently logging needs to be rendered and printed to the console as needed. Will provide a setting to stream log to the console in realtime     |
+| **Log buffer limit**       | `minor` | Current log buffer is unlimited. Will provide an API to adjust max length and purge last in when limit exceeded                                  |
+| **Expose log buffer**      | `minor` | The log buffer will be exposed which will allow for custom queries on log details                                                                |
+| **Multi-Instance Logging** | `major` | Currently there is only one log buffer. Would like to make the ability to create multiple log buffers, to isolate diagnostics as needed          |
 
 ## Issues & Contributing
 
