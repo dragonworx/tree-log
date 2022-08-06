@@ -3,6 +3,7 @@ export {
   pushLog,
   popLog,
   clearLog,
-  renderLog,
+  printLog,
+  snapshotLog,
   setLogOptions,
 } from './log';

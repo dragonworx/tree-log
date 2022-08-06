@@ -4,9 +4,9 @@ import {
   LogEntry,
   LogOptions,
   LogTraceDetail,
-} from './types';
+} from './constTypes';
 
-const clr = require('ansi-colors');
+import { color, decodeColorForLine } from './color';
 
 // alt code references: https://en.wikipedia.org/wiki/Alt_code
 
@@ -17,42 +17,61 @@ export function dataToString(data: Arguments, options: LogOptions): string {
     .map((value) => {
       const type = typeof value;
       if (type === 'string') {
-        return clr.white(`"${value}"`);
+        return color(`"${value}"`, 'orange');
       } else if (type === 'number') {
-        return clr.green(value);
+        return color(value, 'green');
       } else if (type === 'boolean') {
-        return clr.magenta(value);
+        return color(value, 'magenta');
       } else if (value === null) {
-        return clr.red('null');
+        return color('null', 'red');
       } else if (value === undefined) {
-        return clr.red('undefined');
+        return color('undefined', 'red');
       } else if (type === 'object') {
         const proto = value.__proto__.constructor.name;
         if (proto === 'Array') {
-          return '[' + dataToString(value, options) + ']';
+          return (
+            color('[ ', 'white') +
+            dataToString(value, options) +
+            color(' ]', 'white')
+          );
         } else if (proto === 'Date') {
-          return clr.cyanBright(`${formatDate(value)} ${formatTime(value)}`);
+          return color(`${formatDate(value)} ${formatTime(value)}`, 'cyan', {
+            bold: true,
+          });
         } else if (proto === 'RegExp') {
           const regex = value as RegExp;
-          return clr.cyanBright(`/${regex.source}/${regex.flags}`);
+          return color(`/${regex.source}/${regex.flags}`, 'cyan', {
+            bold: true,
+          });
         } else {
-          return clr.cyanBright(
+          return color(
             stringProviderMethodName! in value
               ? dataToString([value[stringProviderMethodName!]()], options)
-              : '{ ' +
+              : color('{ ', 'white') +
                   Object.keys(value)
                     .map(
-                      (key) => `${key}: ${dataToString([value[key]], options)}`,
+                      (key) =>
+                        `${color(key, 'white')}: ${dataToString(
+                          [value[key]],
+                          options,
+                        )}`,
                     )
-                    .join(', ') +
-                  ' }',
+                    .join(color(', ', 'white')) +
+                  color(' }', 'white'),
+            'cyan',
+            { bold: true },
           );
         }
       }
       return value;
     })
-    .join(clr.grey(', '));
+    .join(color(', ', 'grey'));
 }
+
+const indentStem = '\u2502'; // │
+const nthStem = '\u251C\u2500'; // ├─
+const lastStem = '\u2514\u2500'; // └─
+const space = ' ';
 
 export function entryToString(
   entry: LogEntry,
@@ -61,24 +80,25 @@ export function entryToString(
   options: LogOptions,
   isLastChild = true,
 ) {
-  const { showTimeStamp, useColor, useTimeDelta } = options;
-
-  clr.enabled = !!useColor;
+  const { showTimeStamp, useTimeDelta } = options;
 
   const { label, data } = entry;
 
   const prefix = showTimeStamp
-    ? `${formatTimeStamp(entry, previousDetail, useTimeDelta!)} `
+    ? `${formatTimeStamp(entry, previousDetail, useTimeDelta!)}${space}`
     : '';
-  const indent = clr.grey(
-    `│ `.repeat(info.depth) + (isLastChild ? '└─' : '├─'),
+  const indent = color(
+    `${indentStem}${space}`.repeat(info.depth) +
+      (isLastChild ? lastStem : nthStem),
+    'grey',
   );
   const id = info.isNode
-    ? clr.bold.white.underline(`${label}`)
-    : clr.bold.yellow(`${label}`);
-  const dataStr = data ? dataToString(data, options) : '';
+    ? color(`${label}:`, 'white', { bold: true, underline: true })
+    : color(`${label}:`, 'yellow');
+  const dataStr =
+    data && data.length > 0 ? space + dataToString(data, options) : '';
 
-  return `${prefix}${indent}${id} ${dataStr}`;
+  return decodeColorForLine(`${prefix}${indent}${id}${dataStr}`);
 }
 
 export function formatTimeStamp(
@@ -94,12 +114,24 @@ export function formatTimeStamp(
       timestamp.getTime() - previousTimestamp.getTime(),
     ).padStart(6, '0');
 
-    return `+${clr.cyanBright(delta)}${clr.cyanBright('│')}`;
+    return `+${color(delta, 'cyan', { bold: true })}${color(
+      indentStem,
+      'cyan',
+      {
+        bold: true,
+      },
+    )}`;
   } else {
     const dateStr = formatDate(timestamp);
     const timeStr = formatTime(timestamp);
 
-    return `${clr.blue(dateStr + '│')}${clr.cyanBright(timeStr + '│')}`;
+    return `${color(dateStr + indentStem, 'blue')}${color(
+      timeStr + indentStem,
+      'cyan',
+      {
+        bold: true,
+      },
+    )}`;
   }
 }
 
@@ -110,12 +142,13 @@ export function formatDate(date: Date) {
   )}/${date.getDate()}/${date.getFullYear()}`;
 }
 
-export function formatTime(date: Date) {
-  const hours = date.getHours();
-  const mins = date.getMinutes();
-  const secs = date.getSeconds();
-  const ms = date.getMilliseconds();
-  const minutes = mins < 10 ? '0' + mins : mins;
+const pad = (num: number, digits: number) => String(num).padStart(digits, '0');
 
-  return `${hours}:${minutes}:${secs}:${ms}`;
+export function formatTime(date: Date) {
+  const hours = pad(date.getHours(), 2);
+  const mins = pad(date.getMinutes(), 2);
+  const secs = pad(date.getSeconds(), 2);
+  const ms = pad(date.getMilliseconds(), 3);
+
+  return `${hours}:${mins}:${secs}:${ms}`;
 }

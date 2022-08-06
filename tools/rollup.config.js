@@ -1,10 +1,11 @@
-import resolve from "@rollup/plugin-node-resolve";
-// import commonjs from "@rollup/plugin-commonjs";
-import path from "path";
-import { terser } from "rollup-plugin-terser";
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import path from 'path';
+import { terser } from 'rollup-plugin-terser';
+import replace from 'rollup-plugin-replace';
 
-const { entryPoints, entryPointPaths } = require("./entry-points");
-const packageJson = require("../package.json");
+const { entryPoints, entryPointPaths } = require('./entry-points');
+const packageJson = require('../package.json');
 
 const dependencies = Object.keys(packageJson.dependencies || {});
 const devDependencies = Object.keys(packageJson.devDependencies || {});
@@ -16,11 +17,11 @@ const buildDependencies = [
 ];
 
 const toRelativePath = (id, parentId) => {
-  const distRoot = path.resolve(__dirname, "../dist");
+  const distRoot = path.resolve(__dirname, '../dist');
   if (path.isAbsolute(id)) {
     return path.relative(distRoot, id);
   }
-  return path.relative(distRoot, path.resolve(parentId, "../", id));
+  return path.relative(distRoot, path.resolve(parentId, '../', id));
 };
 
 const isExternal = (id, parentId) => {
@@ -30,15 +31,15 @@ const isExternal = (id, parentId) => {
 };
 
 const prepareBundle = (dirs) => {
-  const dir = path.join("./dist", ...dirs);
+  const dir = path.join('./dist', ...dirs);
   return {
     input: `${dir}/index.js`,
     external: isExternal,
     output: {
       file: `${dir}/index.cjs.js`,
-      format: "cjs",
+      format: 'cjs',
       sourcemap: true,
-      exports: "named",
+      exports: 'named',
       externalLiveBindings: false,
     },
     plugins: [resolve()],
@@ -48,27 +49,34 @@ const prepareBundle = (dirs) => {
 export default [
   ...entryPoints.map(prepareBundle),
   {
-    input: "./dist/index.js",
+    input: './dist/index.js',
     external: devDependencies,
     output: [
       {
-        name: packageJson.name,
+        name: 'turbo_log',
         file: `./dist/bundle.js`,
-        format: "umd",
+        format: 'umd',
         sourcemap: true,
-        exports: "named",
+        exports: 'named',
         externalLiveBindings: false,
       },
       {
-        name: packageJson.name,
+        name: 'turbo_log',
         file: `./dist/bundle.min.js`,
-        format: "umd",
+        format: 'umd',
         sourcemap: true,
-        exports: "named",
+        exports: 'named',
         externalLiveBindings: false,
         plugins: [terser()],
       },
     ],
-    plugins: [resolve()],
+    plugins: [
+      replace({
+        'process.env': JSON.stringify({}),
+        'process.platform': JSON.stringify({}),
+      }),
+      resolve(),
+      commonjs(),
+    ],
   },
 ];

@@ -1,12 +1,18 @@
-import { LogEntry, LogItem, LogNode, LogTrace, LogTraceDetail } from './types';
-import { state } from './log';
+import {
+  LogEntry,
+  LogItem,
+  LogNode,
+  LogTrace,
+  LogTraceDetail,
+  state,
+} from './constTypes';
 
 export function flatten(withDetail = false) {
   const buffer: Array<LogTrace> = [];
   _flatten(
     state.root,
     buffer,
-    withDetail ? { depth: -1, isLastChild: false, isNode: true } : undefined,
+    withDetail ? { depth: -2, isLastChild: false, isNode: true } : undefined,
   );
   return buffer;
 }
@@ -33,7 +39,7 @@ function _flatten(
         buffer,
         info
           ? {
-              depth: info.depth + 1,
+              depth: info.depth + 2,
               isLastChild: i === entry.children.length - 1,
               isNode: isNode(child),
             }

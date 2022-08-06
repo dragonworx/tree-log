@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Turbo Log HTML Test Harness</title>
+    <style>
+      body {
+        background-color: #222;
+      }
+      h1 {
+        font-family: monospace;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Text │├</h1>
+    <script src="../dist/bundle.js"></script>
+    <script>
+      const { log, pushLog, popLog, printLog, setLogOptions } =
+        window.turbo_log;
+
+      setLogOptions({
+        enabled: true,
+        showTimeStamp: true,
+        useTimeDelta: false,
+        useColor: true,
+      });
+
+      async function main() {
+        log('start');
+        await sub2Func();
+        log('end');
+      }
+
+      async function sub2Func() {
+        pushLog('sub2'); // <- push a new head onto the stack
+        log('thing 1', 1, /a/g, new Date(0)); // <- subsequent log calls are now nested
+        await sub3Func();
+        log('thing 2', 4, { x: 1 });
+        popLog(); // <-- when we're done with this level we pop
+      }
+
+      function sub3Func() {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            pushLog('sub3');
+            log('thing a', 3, false, ['a', 'b', true]);
+            log('thing b', 3, true);
+            popLog();
+            resolve();
+          }, 1000);
+        });
+      }
+
+      main().then(() => {
+        printLog();
+      });
+    </script>
+  </body>
+</html>
