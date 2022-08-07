@@ -20,6 +20,7 @@ export const state: State = (() => {
   };
 
   return {
+    hasWarned: false,
     options: defaultLogOptions,
     root,
     head: root,
@@ -56,6 +57,7 @@ export interface LogTraceDetail {
 export type LogItem = LogNode | LogEntry;
 
 export interface State {
+  hasWarned: boolean;
   options: LogOptions;
   root: LogNode;
   head: LogNode;

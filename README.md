@@ -155,7 +155,11 @@ For CI environments or terminals which don't support color `setLogOptions({ useC
 
 ## Enabling / Disabling Logging
 
-Logging is disabled by default and must be enabled for local development. You'll receive a single warning if logging is disabled and log calls are made. You could use various methods including environment or build variables, query parameters, or localStorage to dynamically enable it at runtime based on the environment.
+> **Logging is disabled by default and must be enabled**
+
+This library is designed to be integrated with production code, but create zero overheads. Therefore logging is an opt-in feature, where the default is disabled. When disabled, logging calls can still be called but there will no updates to the log buffer, or extra memory consumed. This effectively turns the log functions into no-ops which ensures virtually zero overhead for leaving the logging calls in place.
+
+It's recommended to use an environment or build variable, query parameters, or localStorage to dynamically enable it at runtime based on the environment. Since this library is built as a UMD type you can access the global and output the log with `window.turbo_log.printLog()`.
 
 ```javascript
 import { setLogOptions } from 'tree-log';
@@ -163,7 +167,7 @@ import { setLogOptions } from 'tree-log';
 setLogOptions({ enabled: !!process.env.LOGGING });
 ```
 
-When disabled, logging calls can still be called but there will no updates to the log buffer, or extra memory consumed. This effectively turns the log functions into no-ops which ensures virtually zero overhead for leaving the logging calls in place.
+> In Browser environments you'll receive a single message `turbo-log is disabled.` if logging is disabled and log calls are made.
 
 ## Migrating
 
@@ -205,13 +209,13 @@ it('should match snapshot', () => {
 
 This project is actively under development. The following features are planned for upcoming releases.
 
-| Feature                    | Bump    | Description                                                                                                                                  |
+| Feature                    | Bump               | Description                                                                                                                                                                                                                                                                        |
 | -------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Realtime logging**       | `minor` | Currently logging needs to be rendered and printed to the console as needed. Will provide a setting to stream log to the console in realtime |
-| **Log buffer limit**       | `minor` | Current log buffer is unlimited. Will provide an API to adjust max length and purge last in when limit exceeded                              |
-| **Expose log buffer**      | `minor` | The log buffer will be exposed which will allow for custom queries on log details                                                            |
+| **Realtime logging**       | `minor`            | Currently logging needs to be rendered and printed to the console as needed. Will provide a setting to stream log to the console in realtime                                                                                                                                       |
+| **Log buffer limit**       | `minor`            | Current log buffer is unlimited. Will provide an API to adjust max length and purge last in when limit exceeded                                                                                                                                                                    |
+| **Expose log buffer**      | `minor`            | The log buffer will be exposed which will allow for custom queries on log details                                                                                                                                                                                                  |
 | **Themes**                 | `minor`            | Current theme is dark biased but works in light consoles. Will add a dedicated light theme as part of options or possibly ability to set token colors                                                                                                                              |
-| **Multi-Instance Logging** | `major` | Currently there is only one log buffer. Would like to make the ability to create multiple log buffers, to isolate diagnostics as needed      |
+| **Multi-Instance Logging** | `major`            | Currently there is only one log buffer. Would like to make the ability to create multiple log buffers, to isolate diagnostics as needed                                                                                                                                            |
 | **Browser Widget**         | `separate package` | Browser logging would benefit from more functionality including search, filtering, and deeper inspection. This is beyond basic console output and would require a floating widget in page. A floating widget would be preferred over a browser extension for full browser support. |
 
 ## Issues & Contributing

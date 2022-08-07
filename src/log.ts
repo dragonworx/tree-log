@@ -10,9 +10,20 @@ import { entryToString } from './format';
 import { flatten } from './write';
 import { decodeBrowserColorLine } from './color';
 
+const warn = () => {
+  if (!state.hasWarned) {
+    console.log(
+      '%cturbo-log%c is disabled.',
+      'color:cyan;font-weight:bold;',
+      'color:grey',
+    );
+    state.hasWarned = true;
+  }
+};
+
 export function log(label: string, ...data: any[]) {
   if (!state.options.enabled) {
-    return;
+    return warn();
   }
 
   const entry: LogEntry = {
@@ -26,7 +37,7 @@ export function log(label: string, ...data: any[]) {
 
 export function pushLog(label: string) {
   if (!state.options.enabled) {
-    return;
+    return warn();
   }
 
   const node: LogNode = {
@@ -42,7 +53,7 @@ export function pushLog(label: string) {
 
 export function popLog() {
   if (!state.options.enabled) {
-    return;
+    return warn();
   }
 
   if (state.head.parent) {
