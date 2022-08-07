@@ -5,7 +5,7 @@
 
 Simple but powerful nested logging for debugging and testing!
 
-Works in both the **Browser** and **NodeJS**!
+Works in both the **Browser** and **NodeJS** with zero-dependencies and a tiny bundle size of `5kb` (`2kb` gzipped!).
 
 ## Install
 
