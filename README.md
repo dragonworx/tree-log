@@ -5,7 +5,7 @@
 
 Simple but powerful nested logging for debugging and testing!
 
-Currently only supported for **NodeJS**, **Browser** support coming soon!
+Works in both the **Browser** and **NodeJS**!
 
 ## Install
 
@@ -25,10 +25,11 @@ The public API consists of the following functions.
 | `pushLog(label: string): void`                      | Increase the indentation level and create a new stack head with the given label |
 | `popLog(): void`                                    | Decrease the indentation level and pop the stack head                           |
 | `clearLog(): void`                                  | Clear the log buffer                                                            |
-| `renderLog(): string`                               | Render the current log buffer                                                   |
+| `printLog(): void`                                  | Render the current log buffer to the the console                                |
+| `snaphotLog(): string`                              | Return the current log buffer as a plain text snapshot as a string              |
 | `setLogOptions(options: Partial<LogOptions>): void` | Set global logging options                                                      |
 
-Import as es6 modules or require as commonjs.
+Import as es6 modules, commonjs, or UMD.
 
 ```javascript
 // es6 modules
@@ -36,7 +37,14 @@ import { log, pushLog, popLog, ... } from 'turbo-log';
 
 // or commonjs
 const { log, pushLog, popLog, ... } = require('turbo-log');
+
+// or UMD global
+const { log, pushLog, popLog, ... } = window.turbo_log;
 ```
+
+### Safari Usage
+
+If using `turbo-log` with Safari you'll need to ensure the default encoding setting is set to `UTF-8` by opening the Advanced page of the Safari's preferences. See this [link](https://github.com/vuejs/vitepress/issues/218#issuecomment-780999845) for an example.
 
 ## Logging
 
@@ -51,7 +59,7 @@ import { log } from 'turbo-log';
 
 log('some label', someValue, anotherValue, someObject...);
 
-// or
+// or just a labelled entry with no extra data
 
 log('just a label');
 ```
@@ -63,7 +71,7 @@ Log entries can be nested by increasing or decreasing indentation with `pushLog(
 Here's a complete example:
 
 ```javascript
-import { log, pushLog, popLog, renderLog, setLogOptions } from 'turbo-log';
+import { log, pushLog, popLog, printLog, setLogOptions } from 'turbo-log';
 
 // setup as part of app initialisation
 setLogOptions({
@@ -99,49 +107,51 @@ function sub3Func() {
   });
 }
 
-// do stuff, then log
+// do stuff, then print the log to the console
 main().then(() => {
-  console.log(renderLog());
+  printLog();
 });
 ```
 
 > Just remember for every `pushLog()` call to include a corresponding `popLog()` call to balance the stack.
 
-## Rendering Log Output
+## Viewing Log Output
 
-To output the log to the console or terminal, use `renderLog()` to return a string.
+To output the log to the console or terminal, use `printLog()` to return a string.
 
 ```javascript
-import { renderLog } from 'turbo-log';
+import { printLog } from 'turbo-log';
 
-console.log(renderLog());
+// perform logging during application runtime...
+
+printLog();
 ```
 
-<img src="./doc/output-timestamp.png" alt="drawing" width="500"/>
+<img src="./doc/output-timestamp.png" alt="drawing" width="600"/>
 
 ## Log Options
 
 There are several options to control logging which can be set via the `setLogOptions(options: Partial<LogOptions>)` function where `LogOptions` is defined as:
 
-| Property                           | Default       | Description                                                                                                                                                                                         |
-| ---------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled: boolean`                 | `false`       | Enable or disable logging. By default logging is disabled and must be opted-in. This allows for the integration of logging as a first class citizen without creating noise for end users by default |
-| `showTimeStamp: boolean`           | `true`        | Show the timestamp prefix for each line                                                                                                                                                             |
-| `useTimeDelta: boolean`            | `false`       | Use the milliseconds delta since the last entry, or use the full date and time                                                                                                                      |
-| `useColor: boolean`                | `true`        | Output using ansi color codes, or just plain text                                                                                                                                                   |
-| `stringProviderMethodName: string` | `"toLogInfo"` | When converting argument objects to strings this method will be called if found on the object, falling back to native string conversion for that type. This makes objects "log aware" if needed     |
+| Property                           | Default       | Description                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled: boolean`                 | `false`       | Enable or disable logging. By default logging is disabled and must be opted-in. This allows for the integration of logging as a first class citizen without creating noise for end users by default                                                                                                                                                   |
+| `showTimeStamp: boolean`           | `true`        | Show the timestamp prefix for each line                                                                                                                                                                                                                                                                                                               |
+| `useTimeDelta: boolean`            | `false`       | Use the milliseconds delta since the last entry, or use the full date and time                                                                                                                                                                                                                                                                        |
+| `useColor: boolean`                | `true`        | Output using ansi color codes, or just plain text                                                                                                                                                                                                                                                                                                     |
+| `stringProviderMethodName: string` | `"toLogInfo"` | The method name to look for when converting argument objects to strings. This method will be called if found on an object, falling back to native string conversion for that type. This makes objects "log aware" if needed. For example logging this object `{toLogInfo: () => 'my log data'}` will display `"my log data"` for the log entries data |
 
-For example passing `useTimeDelta: true` will show the delta in milliseconds between calls.
+`setLogOptions({ useTimeDelta: true })` will show the delta in milliseconds between calls instead of the full datetime.
 
-<img src="./doc/output-delta.png" alt="drawing" width="500"/>
+<img src="./doc/output-delta.png" alt="drawing" width="600"/>
 
-Or if you don't want the timestamp prefix at just pass `showTimeStamp: false`.
+Or if you don't want the timestamp prefix at all `setLogOptions({ showTimeStamp: false })`.
 
-<img src="./doc/output-no-timestamp.png" alt="drawing" width="380"/>
+<img src="./doc/output-no-timestamp.png" alt="drawing" width="500"/>
 
-For CI environments or terminals which don't support color pass `useColor: false`.
+For CI environments or terminals which don't support color `setLogOptions({ useColor: false })`.
 
-<img src="./doc/output-no-color.png" alt="drawing" width="380"/>
+<img src="./doc/output-no-color.png" alt="drawing" width="600"/>
 
 ## Enabling / Disabling Logging
 
@@ -157,6 +167,11 @@ When disabled, logging calls can still be called but there will no updates to th
 
 ## Migrating
 
+### Migrating from `1.x` to `2.x`
+
+- Browser support added
+- `renderLog()` was replaced with `printLog()` and `snapshotLog()`. `printLog()` now renders to the console, whereas `snapshotLog()` returns a string as `renderLog()` did
+
 ### Migrating from `0.x` to `1.x`
 
 - `setLogEnabled()` was replaced with global settings `setLogOptions({ enabled: boolean })`
@@ -170,16 +185,19 @@ This library is lightweight and can be used a general purpose logging tool. Logg
 
 ### Snapshots for Unit Tests
 
-Since the log can be serialised with or without a timestamp or color, it can be used as a text snapshot for integration testing (eg. using Jest text snapshots). Having your application log during testing and then comparing that serialised log to the previous snapshot will uncover any changes in determinism or order of events, race conditions, or over calling.
+Since the log can be serialised with or without a timestamp or color, it can be used as a text snapshot for integration testing (eg. using Jest text snapshots) via `snapshotLog()`. Having your application log during testing and then comparing that serialised log to the previous snapshot will uncover any changes in determinism or order of events, race conditions, or over calling.
+
+> Note that `snapshotLog()` disables the timestamp prefix since times or deltas would vary between tests and cause noisy failures.
 
 ```javascript
 // using Jest...
 
+import { snapshotLog } from 'turbo-log';
+
 it('should match snapshot', () => {
   // setup, perform test operations with logging enabled...
 
-  const output = renderLog({ useTimeStamp: false, useColor: false });
-  expect(output).toMatchSnapshot();
+  expect(snapshotLog()).toMatchSnapshot();
 });
 ```
 
@@ -187,13 +205,14 @@ it('should match snapshot', () => {
 
 This project is actively under development. The following features are planned for upcoming releases.
 
-| Feature                    | Bump    | Description                                                                                                                                      |
-| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Browser Support**        | `minor` | Currently only working for NodeJS environments due to dependency on `ansi-colors`. Rewriting color functionality to work across node and browser |
-| **Realtime logging**       | `minor` | Currently logging needs to be rendered and printed to the console as needed. Will provide a setting to stream log to the console in realtime     |
-| **Log buffer limit**       | `minor` | Current log buffer is unlimited. Will provide an API to adjust max length and purge last in when limit exceeded                                  |
-| **Expose log buffer**      | `minor` | The log buffer will be exposed which will allow for custom queries on log details                                                                |
-| **Multi-Instance Logging** | `major` | Currently there is only one log buffer. Would like to make the ability to create multiple log buffers, to isolate diagnostics as needed          |
+| Feature                    | Bump    | Description                                                                                                                                  |
+| -------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Realtime logging**       | `minor` | Currently logging needs to be rendered and printed to the console as needed. Will provide a setting to stream log to the console in realtime |
+| **Log buffer limit**       | `minor` | Current log buffer is unlimited. Will provide an API to adjust max length and purge last in when limit exceeded                              |
+| **Expose log buffer**      | `minor` | The log buffer will be exposed which will allow for custom queries on log details                                                            |
+| **Themes**                 | `minor`            | Current theme is dark biased but works in light consoles. Will add a dedicated light theme as part of options or possibly ability to set token colors                                                                                                                              |
+| **Multi-Instance Logging** | `major` | Currently there is only one log buffer. Would like to make the ability to create multiple log buffers, to isolate diagnostics as needed      |
+| **Browser Widget**         | `separate package` | Browser logging would benefit from more functionality including search, filtering, and deeper inspection. This is beyond basic console output and would require a floating widget in page. A floating widget would be preferred over a browser extension for full browser support. |
 
 ## Issues & Contributing
 

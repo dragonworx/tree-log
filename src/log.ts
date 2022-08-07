@@ -1,30 +1,14 @@
-import { LogNode, LogEntry, State, LogOptions } from './types';
+import {
+  LogNode,
+  LogEntry,
+  state,
+  LogOptions,
+  isBrowser,
+  RootLabel,
+} from './constTypes';
 import { entryToString } from './format';
 import { flatten } from './write';
-
-const RootLabel = '__root__';
-
-export const defaultLogOptions: LogOptions = {
-  enabled: false,
-  showTimeStamp: true,
-  useTimeDelta: false,
-  useColor: true,
-  stringProviderMethodName: 'toLogInfo',
-};
-
-export const state: State = (() => {
-  const root: LogNode = {
-    timestamp: new Date(),
-    label: RootLabel,
-    children: [],
-  };
-
-  return {
-    options: defaultLogOptions,
-    root,
-    head: root,
-  };
-})();
+import { decodeBrowserColorLine } from './color';
 
 export function log(label: string, ...data: any[]) {
   if (!state.options.enabled) {
@@ -66,7 +50,7 @@ export function popLog() {
   }
 }
 
-export function renderLog() {
+export function renderBuffer(options: Partial<LogOptions> = {}) {
   const flat = flatten(true);
   const buffer: Array<string> = [];
 
@@ -80,13 +64,39 @@ export function renderLog() {
           isLastChild: entry.isLastChild!,
           isNode: entry.isNode!,
         },
-        state.options,
+        {
+          ...state.options,
+          ...options,
+        },
         entry.isLastChild,
       ),
     );
   });
 
+  return buffer;
+}
+
+export function snapshotLog() {
+  const buffer = renderBuffer({ useColor: false, showTimeStamp: false });
   return buffer.join('\n');
+}
+
+export function printLog() {
+  const buffer = renderBuffer();
+  if (!isBrowser || state.options.useColor === false) {
+    console.log(buffer.join('\n'));
+  } else {
+    const allMessages: string[] = [];
+    const allStyles: string[][] = [];
+    buffer.forEach((line) => {
+      const [message, style] = decodeBrowserColorLine(line);
+      allMessages.push(message);
+      if (style) {
+        allStyles.push(style);
+      }
+    });
+    console.log(allMessages.join('\n'), ...allStyles.flat());
+  }
 }
 
 export function setLogOptions(options: Partial<LogOptions>) {

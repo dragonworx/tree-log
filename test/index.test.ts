@@ -4,11 +4,11 @@ import {
   log,
   pushLog,
   popLog,
-  renderLog,
-  state,
+  snapshotLog,
+  printLog,
 } from '../src/log';
 // import { toArray, flatten } from '../src/write';
-import { LogEntry } from '../src/types';
+import { LogEntry, state } from '../src/constTypes';
 
 setLogOptions({ enabled: true });
 
@@ -44,6 +44,57 @@ describe('Tree Log', () => {
     });
   });
 
+  it('should match snapshot', (done) => {
+    setLogOptions({
+      enabled: true,
+      showTimeStamp: false,
+      useTimeDelta: true,
+      useColor: true,
+    });
+
+    async function main() {
+      log('start');
+      await sub2Func();
+      log('end');
+    }
+
+    async function sub2Func() {
+      pushLog('sub2'); // <- push a new head onto the stack
+      log('thing 1', 1, /a/g, new Date(0)); // <- subsequent log calls are now nested
+      await sub3Func();
+      log('thing 2', 4, { x: 1 });
+      popLog(); // <-- when we're done with this level we pop
+    }
+
+    function sub3Func() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          pushLog('sub3');
+          log('thing a', 3, false, ['a', 'b', true]);
+          log('thing b', 3, true);
+          popLog();
+          resolve(void 0);
+        }, 1000);
+      });
+    }
+
+    main().then(() => {
+      console.clear();
+      // const snapshot = snapshotLog();
+
+      setLogOptions({
+        useColor: false,
+        showTimeStamp: true,
+        useTimeDelta: false,
+      });
+
+      printLog();
+      // expect(snapshot).toMatchSnapshot();
+
+      done();
+    });
+  });
+
   it('should match snapshot for output', (done) => {
     log('1');
     pushLog('2');
@@ -68,25 +119,24 @@ describe('Tree Log', () => {
         popLog();
         log('1.3', 6);
 
-        setLogOptions({
-          useColor: false,
-          showTimeStamp: false,
-        });
+        // setLogOptions({
+        //   useColor: false,
+        //   showTimeStamp: false,
+        // });
 
-        const outputSnapshot = renderLog();
+        // const snapshot = renderLog();
 
         setLogOptions({
           useColor: true,
           showTimeStamp: true,
-          useTimeDelta: true,
+          useTimeDelta: false,
         });
 
-        const outputFull = renderLog();
+        printLog();
 
-        console.log(outputFull);
         // console.log("toArray:", JSON.stringify(toArray(), null, 4));
         // console.log("flatten:", JSON.stringify(flatten(true), null, 4));
-        expect(outputSnapshot).toMatchSnapshot();
+        // expect(snapshot).toMatchSnapshot();
         done();
       }, 1000);
     }, 500);

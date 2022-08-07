@@ -1,5 +1,31 @@
 export type Arguments = any[];
 
+export const isBrowser = typeof window !== 'undefined';
+
+export const RootLabel = '__root__';
+
+export const defaultLogOptions: LogOptions = {
+  enabled: false,
+  showTimeStamp: true,
+  useTimeDelta: false,
+  useColor: true,
+  stringProviderMethodName: 'toLogInfo',
+};
+
+export const state: State = (() => {
+  const root: LogNode = {
+    timestamp: new Date(),
+    label: RootLabel,
+    children: [],
+  };
+
+  return {
+    options: defaultLogOptions,
+    root,
+    head: root,
+  };
+})();
+
 export interface LogDetail {
   timestamp: Date;
   label: string;
@@ -41,4 +67,9 @@ export interface LogOptions {
   useTimeDelta: boolean;
   useColor: boolean;
   stringProviderMethodName: string;
+}
+
+export interface ColorOptions {
+  bold?: boolean;
+  underline?: boolean;
 }
