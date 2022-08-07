@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.1...turbo-log-v2.0.2) (2022-08-07)
+
+
+### Bug Fixes
+
+* add exclusions to .npmignore ([68ca39a](https://github.com/dragonworx/turbo-log/commit/68ca39a7494301508504f18f7a5a273d77b770ee))
+
 ## [2.0.1](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.0...turbo-log-v2.0.1) (2022-08-07)
 
 
