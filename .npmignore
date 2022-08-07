@@ -21,6 +21,7 @@ LICENSE
 jest.config.js
 package-lock.json
 package.json
+README.md
 release-please-config.json
 tsconfig.json
 
