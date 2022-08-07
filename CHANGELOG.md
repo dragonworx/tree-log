@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.3...turbo-log-v2.0.4) (2022-08-07)
+
+
+### Bug Fixes
+
+* update readme with bundle size ([b5a6aed](https://github.com/dragonworx/turbo-log/commit/b5a6aed69a404170c0891a83288c504d60343156))
+
 ## [2.0.3](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.2...turbo-log-v2.0.3) (2022-08-07)
 
 
