@@ -1,6 +1,6 @@
 {
   "name": "turbo-log",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Turbo powered logging for debugging and testing in Node or the Browser",
   "keywords": [
     "logging",

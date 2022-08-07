@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.2...turbo-log-v2.0.3) (2022-08-07)
+
+
+### Bug Fixes
+
+* add readme to .npmignore ([e2d2625](https://github.com/dragonworx/turbo-log/commit/e2d26251a0f9236c3065e4e102dbec6be57887d9))
+
 ## [2.0.2](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.1...turbo-log-v2.0.2) (2022-08-07)
 
 
