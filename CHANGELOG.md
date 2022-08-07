@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/dragonworx/turbo-log/compare/turbo-log-v1.0.1...turbo-log-v2.0.0) (2022-08-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* refactor renderLog() into printLog() and snapshotLog()
+
+### Features
+
+* add browser support, refactor renderLog() ([1422add](https://github.com/dragonworx/turbo-log/commit/1422add9123ea40babbb8a0dc859cec4816f8037))
+
 ## [1.0.1](https://github.com/dragonworx/turbo-log/compare/turbo-log-v1.0.0...turbo-log-v1.0.1) (2022-08-06)
 
 
