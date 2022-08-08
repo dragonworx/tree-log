@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.4...turbo-log-v2.1.0) (2022-08-08)
+
+
+### Features
+
+* enable logging by default ([f34ea55](https://github.com/dragonworx/turbo-log/commit/f34ea551e1ad7ae48d620ecb024c8cfd399efdad))
+
 ## [2.0.4](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.3...turbo-log-v2.0.4) (2022-08-07)
 
 
