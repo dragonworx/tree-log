@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.1.0...turbo-log-v2.2.0) (2022-08-08)
+
+
+### Features
+
+* fix circular ref, add options to printLog() and return output ([68fb2a4](https://github.com/dragonworx/turbo-log/commit/68fb2a4ef06083d18f0eee1da92341c72c5f82f6))
+
 ## [2.1.0](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.0.4...turbo-log-v2.1.0) (2022-08-08)
 
 
