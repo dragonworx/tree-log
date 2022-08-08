@@ -5,7 +5,7 @@ export const isBrowser = typeof window !== 'undefined';
 export const RootLabel = '__root__';
 
 export const defaultLogOptions: LogOptions = {
-  enabled: false,
+  enabled: true,
   showTimeStamp: true,
   useTimeDelta: false,
   useColor: true,

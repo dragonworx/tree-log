@@ -33,34 +33,39 @@ Import as es6 modules, commonjs, or UMD.
 
 ```javascript
 // es6 modules
-import { log, pushLog, popLog, ... } from 'turbo-log';
+import { log, ... } from 'turbo-log';
 
 // or commonjs
-const { log, pushLog, popLog, ... } = require('turbo-log');
+const { log, ... } = require('turbo-log');
 
-// or UMD global
-const { log, pushLog, popLog, ... } = window.turbo_log;
+// or UMD global in the browser
+const { log, ... } = window.turbo_log;
+
+// log it!
+log('some-event', someValue, anotherValue...);
 ```
 
 ### Safari Usage
 
-If using `turbo-log` with Safari you'll need to ensure the default encoding setting is set to `UTF-8` by opening the Advanced page of the Safari's preferences. See this [link](https://github.com/vuejs/vitepress/issues/218#issuecomment-780999845) for an example.
+If using `turbo-log` with Safari you'll need to ensure the default encoding setting is set to `UTF-8` so the dev tools display the characters correctly. Open the "Advanced" page of the Safari's preferences and see this [link](https://github.com/vuejs/vitepress/issues/218#issuecomment-780999845) for an example.
 
 ## Logging
 
-Logging is broken down into individual log entries. Each entry consists of a string label, followed by any arbitrary values using the `log(label: string, ...data?: any[])` function. Only the label is required.
+Logging is broken down into individual log entries. Each entry consists of a string label, followed by any arbitrary values using the `log(label: string, ...data?: any[])` function. Only the label is required. Entries can be nested _(see "Nesting" section for more info)_.
 
-The `label` is an arbitrary string used for context and can be anything, usually you would make it something to do with the current context reason of the log entry.
+The `label` is an arbitrary string used for context and can be anything, usually you would make it something to do with the current context reason of the log entry. Think of it like an event name.
 
-The rest of the function parameters become the data for that log entry, if any are passed.
+The rest of the function parameters become the data for that log entry.
 
 ```javascript
 import { log } from 'turbo-log';
 
 log('some label', someValue, anotherValue, someObject...);
+```
 
-// or just a labelled entry with no extra data
+The values after the label are optional, you can just log the label if required.
 
+```javascript
 log('just a label');
 ```
 
@@ -155,13 +160,13 @@ For CI environments or terminals which don't support color `setLogOptions({ useC
 
 ## Enabling / Disabling Logging
 
-> **Logging is disabled by default and must be enabled**
+By default logging is enabled, though you may not want the output during production.
 
-This library is designed to be integrated with production code, but create zero overheads. Therefore logging is an opt-in feature, where the default is disabled. When disabled, logging calls can still be called but there will no updates to the log buffer, or extra memory consumed. This effectively turns the log functions into no-ops which ensures virtually zero overhead for leaving the logging calls in place.
-
-It's recommended to use an environment or build variable, query parameters, or localStorage to dynamically enable it at runtime based on the environment. Since this library is built as a UMD type you can access the global and output the log with `window.turbo_log.printLog()`.
+Therefore it's recommended to use an environment or build variable, query parameters, or localStorage to dynamically enable it at runtime based on the environment during your application startup.
 
 ```javascript
+/// during app startup...
+
 import { setLogOptions } from 'tree-log';
 
 setLogOptions({ enabled: !!process.env.LOGGING });
@@ -169,14 +174,20 @@ setLogOptions({ enabled: !!process.env.LOGGING });
 
 > In Browser environments you'll receive a single message `turbo-log is disabled.` if logging is disabled and log calls are made.
 
+The library is designed to be integrated with production code, but create zero overheads when needed. When disabled, logging calls can still be called but there will no updates to the log buffer, or extra memory consumed. This effectively turns the log functions into no-ops which ensures virtually zero overhead for leaving the logging calls in place.
+
 ## Migrating
 
-### Migrating from `1.x` to `2.x`
+### From `2.0.x` to `2.1.x`
+
+- Logging enabled by default, no need to opt-in though still recommended to use env/build vars during app startup to enable/disable as needed
+
+### From `1.x` to `2.x`
 
 - Browser support added
 - `renderLog()` was replaced with `printLog()` and `snapshotLog()`. `printLog()` now renders to the console, whereas `snapshotLog()` returns a string as `renderLog()` did
 
-### Migrating from `0.x` to `1.x`
+### From `0.x` to `1.x`
 
 - `setLogEnabled()` was replaced with global settings `setLogOptions({ enabled: boolean })`
 - `renderLog(options)` was replaced with global settings `setLogOptions(...)`. Use the same properties globally once rather per render call
@@ -186,6 +197,8 @@ setLogOptions({ enabled: !!process.env.LOGGING });
 ### Integrated Logging & Diagnostics
 
 This library is lightweight and can be used a general purpose logging tool. Logging is retained in memory and can be serialised when needed. Being able to nest statements creates a great tool for diagnostics, troubleshooting, and performance tuning. Logging statements can be left in production and the logging functionality is disabled by default. This allows for debugging and logging to be a first class citizen of a code base without requiring constant local development changes or accidental code garbage, in both Node and the Browser.
+
+Recommended use case is to integrate logging statements in desired locations of application, then run a known sequence and print the log to see what was captured.
 
 ### Snapshots for Unit Tests
 
