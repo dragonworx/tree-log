@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.2.0...turbo-log-v2.2.1) (2022-08-08)
+
+
+### Bug Fixes
+
+* ensure browser warning is cleared when log re-enabled ([38f3a90](https://github.com/dragonworx/turbo-log/commit/38f3a90e922fff83e93facdb0cecb47cc33547b9))
+
 ## [2.2.0](https://github.com/dragonworx/turbo-log/compare/turbo-log-v2.1.0...turbo-log-v2.2.0) (2022-08-08)
 
 
