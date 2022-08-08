@@ -125,6 +125,9 @@ export function setLogOptions(options: Partial<LogOptions>) {
     ...state.options,
     ...options,
   };
+  if (options.enabled && state.hasWarned) {
+    state.hasWarned = false;
+  }
 }
 
 export function clearLog() {
