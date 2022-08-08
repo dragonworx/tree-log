@@ -19,15 +19,15 @@ npm install turbo-log
 
 The public API consists of the following functions.
 
-| Function                                            | Description                                                                     |
-| --------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `log(label: string, ...data?: any:[]): void`        | Add a log entry to current stack head with the given label and data             |
-| `pushLog(label: string): void`                      | Increase the indentation level and create a new stack head with the given label |
-| `popLog(): void`                                    | Decrease the indentation level and pop the stack head                           |
-| `clearLog(): void`                                  | Clear the log buffer                                                            |
-| `printLog(): void`                                  | Render the current log buffer to the the console                                |
-| `snaphotLog(): string`                              | Return the current log buffer as a plain text snapshot as a string              |
-| `setLogOptions(options: Partial<LogOptions>): void` | Set global logging options                                                      |
+| Function                                                           | Description                                                                                                                                                                 |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `log(label: string, ...data?: any:[]): void`                       | Add a log entry to current stack head with the given label and data                                                                                                         |
+| `pushLog(label: string): void`                                     | Increase the indentation level and create a new stack head with the given label                                                                                             |
+| `popLog(): void`                                                   | Decrease the indentation level and pop the stack head                                                                                                                       |
+| `clearLog(): void`                                                 | Clear the log buffer                                                                                                                                                        |
+| `printLog(logOptions?: LogOptions & { silent?: boolean }): string` | Render the current log buffer to the the console (pass `silent:true` to skip console output), and returns the outputted string (will contain formatting if `useColor:true`) |
+| `snaphotLog(): string`                                             | Return the current log buffer as a plain text snapshot as a string                                                                                                          |
+| `setLogOptions(options: Partial<LogOptions>): void`                | Set global logging options                                                                                                                                                  |
 
 Import as es6 modules, commonjs, or UMD.
 

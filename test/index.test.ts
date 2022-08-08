@@ -7,7 +7,6 @@ import {
   snapshotLog,
   printLog,
 } from '../src/log';
-// import { toArray, flatten } from '../src/write';
 import { LogEntry, state } from '../src/constTypes';
 
 setLogOptions({ enabled: true });
@@ -42,9 +41,19 @@ describe('Tree Log', () => {
       const { entry } = setup();
       expect(entry.timestamp).toBeInstanceOf(Date);
     });
+
+    it('should handle circular references in objects', () => {
+      const { children, entry } = setup();
+      const a: any = {};
+      const b = { a: a };
+      a.b = b;
+      log('round and round we go', a, b);
+      const output = printLog({ silent: true });
+      expect(output).toContain('{Circular...}');
+    });
   });
 
-  it('should match snapshot', (done) => {
+  it.skip('should render example', (done) => {
     setLogOptions({
       enabled: true,
       showTimeStamp: false,
@@ -80,7 +89,6 @@ describe('Tree Log', () => {
 
     main().then(() => {
       console.clear();
-      // const snapshot = snapshotLog();
 
       setLogOptions({
         useColor: false,
@@ -89,8 +97,6 @@ describe('Tree Log', () => {
       });
 
       printLog();
-      // expect(snapshot).toMatchSnapshot();
-
       done();
     });
   });
@@ -119,13 +125,6 @@ describe('Tree Log', () => {
         popLog();
         log('1.3', 6);
 
-        // setLogOptions({
-        //   useColor: false,
-        //   showTimeStamp: false,
-        // });
-
-        // const snapshot = renderLog();
-
         setLogOptions({
           useColor: true,
           showTimeStamp: true,
@@ -134,9 +133,8 @@ describe('Tree Log', () => {
 
         printLog();
 
-        // console.log("toArray:", JSON.stringify(toArray(), null, 4));
-        // console.log("flatten:", JSON.stringify(flatten(true), null, 4));
-        // expect(snapshot).toMatchSnapshot();
+        expect(snapshotLog()).toMatchSnapshot();
+
         done();
       }, 1000);
     }, 500);

@@ -10,6 +10,8 @@ import { color, decodeColorForLine } from './color';
 
 // alt code references: https://en.wikipedia.org/wiki/Alt_code
 
+const objRef = new Map();
+
 export function dataToString(data: Arguments, options: LogOptions): string {
   const { stringProviderMethodName } = options;
 
@@ -44,7 +46,11 @@ export function dataToString(data: Arguments, options: LogOptions): string {
             bold: true,
           });
         } else {
-          return color(
+          if (objRef.has(value)) {
+            return color('{Circular...}', 'red');
+          }
+          objRef.set(value, true);
+          const output = color(
             stringProviderMethodName! in value
               ? dataToString([value[stringProviderMethodName!]()], options)
               : color('{ ', 'white') +
@@ -61,6 +67,8 @@ export function dataToString(data: Arguments, options: LogOptions): string {
             'cyan',
             { bold: true },
           );
+          objRef.clear();
+          return output;
         }
       }
       return value;
@@ -95,6 +103,9 @@ export function entryToString(
   const id = info.isNode
     ? color(`${label}:`, 'white', { bold: true, underline: true })
     : color(`${label}:`, 'yellow');
+
+  objRef.clear();
+
   const dataStr =
     data && data.length > 0 ? space + dataToString(data, options) : '';
 

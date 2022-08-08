@@ -92,10 +92,16 @@ export function snapshotLog() {
   return buffer.join('\n');
 }
 
-export function printLog() {
-  const buffer = renderBuffer();
+export function printLog(
+  options: Partial<LogOptions & { silent?: boolean }> = {},
+) {
+  const buffer = renderBuffer(options);
   if (!isBrowser || state.options.useColor === false) {
-    console.log(buffer.join('\n'));
+    const output = buffer.join('\n');
+    if (options.silent !== true) {
+      console.log(output);
+    }
+    return output;
   } else {
     const allMessages: string[] = [];
     const allStyles: string[][] = [];
@@ -106,7 +112,11 @@ export function printLog() {
         allStyles.push(style);
       }
     });
-    console.log(allMessages.join('\n'), ...allStyles.flat());
+    const output = allMessages.join('\n');
+    if (options.silent !== true) {
+      console.log(output, ...allStyles.flat());
+    }
+    return output;
   }
 }
 

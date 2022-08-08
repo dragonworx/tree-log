@@ -27,6 +27,8 @@
 
       async function main() {
         log('start');
+        const a = { x: () => {} };
+        log('func', a);
         await sub2Func();
         log('end');
       }
